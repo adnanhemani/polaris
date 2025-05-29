@@ -287,4 +287,11 @@ public class FeatureConfiguration<T> extends PolarisConfiguration<T> {
                   + "This should only be set to 'true' for tests!")
           .defaultValue(false)
           .buildFeatureConfiguration();
+
+  public static final FeatureConfiguration<Integer> EVENT_BUFFER_TIME_TO_FLUSH =
+          PolarisConfiguration.<Integer>builder()
+                  .key("EVENT_BUFFER_TIME_TO_FLUSH")
+                  .description("The minimum amount of time (in ms) before events in the buffer flush to the persistence")
+                  .defaultValue(30 * 1000) // Flush every 30s
+                  .buildFeatureConfiguration();
 }

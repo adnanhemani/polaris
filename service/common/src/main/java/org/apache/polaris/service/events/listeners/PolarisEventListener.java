@@ -16,10 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.polaris.service.events;
+package org.apache.polaris.service.events.listeners;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.polaris.core.context.RealmContext;
+import org.apache.polaris.service.events.*;
 
 /**
  * Represents an event listener that can respond to notable moments during Polaris's execution.

@@ -16,29 +16,40 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.polaris.service.events;
+package org.apache.polaris.service.events.listeners;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.smallrye.common.annotation.Identifier;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.apache.polaris.core.config.FeatureConfiguration;
+import org.apache.polaris.core.config.PolarisConfigurationStore;
 import org.apache.polaris.core.context.RealmContext;
 import org.apache.polaris.core.entity.PolarisEvent;
 import org.apache.polaris.core.persistence.MetaStoreManagerFactory;
+import org.apache.polaris.service.events.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /** Event listener that buffers in memory and then dumps to persistence. */
 @ApplicationScoped
 @Identifier("persistence-in-memory-buffer")
 public class InMemoryBufferPolarisEventListener extends PolarisEventListener {
-    @Inject
     MetaStoreManagerFactory metaStoreManagerFactory;
+    PolarisConfigurationStore polarisConfigurationStore;
 
     private final List<PolarisEvent> buffer = new ArrayList<>();
-    private int timeToFlush = -1;
+    private final int timeToFlush;
+
+    @Inject
+    public InMemoryBufferPolarisEventListener(
+            MetaStoreManagerFactory metaStoreManagerFactory,
+            PolarisConfigurationStore polarisConfigurationStore
+    ) {
+        this.metaStoreManagerFactory = metaStoreManagerFactory;
+        this.polarisConfigurationStore = polarisConfigurationStore;
+        this.timeToFlush = polarisConfigurationStore.getConfiguration(null, FeatureConfiguration.EVENT_BUFFER_TIME_TO_FLUSH);
+    }
 
     @Override
     public void onBeforeRequestRateLimited(BeforeRequestRateLimitedEvent event) {
@@ -120,7 +131,7 @@ public class InMemoryBufferPolarisEventListener extends PolarisEventListener {
 
     private void addToBuffer(PolarisEvent polarisEvent, RealmContext realmContext) {
         buffer.add(polarisEvent);
-        if (System.currentTimeMillis() - buffer.getFirst().getTimestampMs() > timeToFlush) {
+        if (System.currentTimeMillis() - buffer.getFirst().getTimestampMs() > this.timeToFlush) {
             metaStoreManagerFactory.getOrCreateSessionSupplier(realmContext).get().writeEvents(buffer);
             buffer.clear();
         }
