@@ -34,14 +34,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.apache.polaris.core.PolarisCallContext;
-import org.apache.polaris.core.entity.EntityNameLookupRecord;
-import org.apache.polaris.core.entity.PolarisBaseEntity;
-import org.apache.polaris.core.entity.PolarisChangeTrackingVersions;
-import org.apache.polaris.core.entity.PolarisEntityCore;
-import org.apache.polaris.core.entity.PolarisEntityId;
-import org.apache.polaris.core.entity.PolarisEntityType;
-import org.apache.polaris.core.entity.PolarisGrantRecord;
-import org.apache.polaris.core.entity.PolarisPrincipalSecrets;
+import org.apache.polaris.core.entity.*;
 import org.apache.polaris.core.persistence.BaseMetaStoreManager;
 import org.apache.polaris.core.persistence.BasePersistence;
 import org.apache.polaris.core.persistence.EntityAlreadyExistsException;
@@ -57,10 +50,7 @@ import org.apache.polaris.core.policy.PolicyType;
 import org.apache.polaris.core.storage.PolarisStorageConfigurationInfo;
 import org.apache.polaris.core.storage.PolarisStorageIntegration;
 import org.apache.polaris.core.storage.PolarisStorageIntegrationProvider;
-import org.apache.polaris.extension.persistence.relational.jdbc.models.ModelEntity;
-import org.apache.polaris.extension.persistence.relational.jdbc.models.ModelGrantRecord;
-import org.apache.polaris.extension.persistence.relational.jdbc.models.ModelPolicyMappingRecord;
-import org.apache.polaris.extension.persistence.relational.jdbc.models.ModelPrincipalAuthenticationData;
+import org.apache.polaris.extension.persistence.relational.jdbc.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -197,6 +187,18 @@ public class JdbcBasePersistenceImpl implements BasePersistence, IntegrationPers
     } catch (SQLException e) {
       throw new RuntimeException(
           String.format("Failed to write to grant records due to %s", e.getMessage()), e);
+    }
+  }
+
+  @Override
+  public void writeEvents(@Nonnull List<PolarisEvent> events) {
+    for (PolarisEvent event : events) {
+      ModelEvent modelEvent = ModelEvent.fromEvent(event);
+      try {
+        datasourceOperations.executeUpdate(generateInsertQuery(modelEvent, realmId));
+      } catch (SQLException e) {
+        throw new RuntimeException(String.format("Failed to write entity due to %s", e.getMessage()), e);
+      }
     }
   }
 

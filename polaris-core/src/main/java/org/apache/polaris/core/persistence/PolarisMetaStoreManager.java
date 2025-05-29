@@ -25,12 +25,7 @@ import java.util.Map;
 import org.apache.polaris.core.PolarisCallContext;
 import org.apache.polaris.core.auth.PolarisGrantManager;
 import org.apache.polaris.core.auth.PolarisSecretsManager;
-import org.apache.polaris.core.entity.PolarisBaseEntity;
-import org.apache.polaris.core.entity.PolarisEntity;
-import org.apache.polaris.core.entity.PolarisEntityCore;
-import org.apache.polaris.core.entity.PolarisEntityId;
-import org.apache.polaris.core.entity.PolarisEntitySubType;
-import org.apache.polaris.core.entity.PolarisEntityType;
+import org.apache.polaris.core.entity.*;
 import org.apache.polaris.core.persistence.dao.entity.BaseResult;
 import org.apache.polaris.core.persistence.dao.entity.ChangeTrackingResult;
 import org.apache.polaris.core.persistence.dao.entity.CreateCatalogResult;
@@ -390,6 +385,10 @@ public interface PolarisMetaStoreManager
       @Nonnull PolarisEntityType entityType,
       long entityCatalogId,
       long entityId);
+
+  void flushEventsToPersistence(
+          @Nonnull PolarisCallContext callCtx,
+          @Nonnull List<PolarisEvent> events);
 
   /**
    * Indicates whether this metastore manager implementation requires entities to be reloaded via

@@ -25,15 +25,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import org.apache.polaris.core.PolarisCallContext;
-import org.apache.polaris.core.entity.EntityNameLookupRecord;
-import org.apache.polaris.core.entity.PolarisBaseEntity;
-import org.apache.polaris.core.entity.PolarisChangeTrackingVersions;
-import org.apache.polaris.core.entity.PolarisEntitiesActiveKey;
-import org.apache.polaris.core.entity.PolarisEntityCore;
-import org.apache.polaris.core.entity.PolarisEntityId;
-import org.apache.polaris.core.entity.PolarisEntityType;
-import org.apache.polaris.core.entity.PolarisGrantRecord;
-import org.apache.polaris.core.entity.PolarisPrincipalSecrets;
+import org.apache.polaris.core.entity.*;
 import org.apache.polaris.core.persistence.EntityAlreadyExistsException;
 import org.apache.polaris.core.persistence.PolicyMappingAlreadyExistsException;
 import org.apache.polaris.core.persistence.RetryOnConcurrencyException;
@@ -259,6 +251,11 @@ public abstract class AbstractTransactionalPersistence implements TransactionalP
   public void writeToGrantRecords(
       @Nonnull PolarisCallContext callCtx, @Nonnull PolarisGrantRecord grantRec) {
     runActionInTransaction(callCtx, () -> this.writeToGrantRecordsInCurrentTxn(callCtx, grantRec));
+  }
+
+  @Override
+  public void writeEvents(@Nonnull List<PolarisEvent> events) {
+    throw new UnsupportedOperationException("Not implemented for EclipseLink, as it is deprecated.");
   }
 
   /** {@inheritDoc} */

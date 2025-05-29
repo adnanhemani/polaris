@@ -31,7 +31,7 @@ services:
       - "--realm=POLARIS"
       - "--credential=POLARIS,root,s3cr3t"
 
-  polaris:
-    depends_on:
-      polaris-bootstrap:
-        condition: service_completed_successfully
+#  polaris:
+#    depends_on:
+#      polaris-bootstrap:
+#        condition: service_completed_successfully

@@ -30,7 +30,7 @@ import java.util.Optional;
 @Table(name = "EVENTS")
 public class ModelEvent {
     // event id
-    @Id private String id;
+    @Id private String eventId;
 
     // id of the request that generated this event
     private String requestId;
@@ -47,8 +47,7 @@ public class ModelEvent {
     // on behalf of a role (actor[1]) assumed by a user (actor[2]), the chain represents
     // this delegation path.
     // actor object, serialized as a JSON string
-    @Column(columnDefinition = "TEXT")
-    private String actorChain;
+    private String actor;
 
     // Operation object that have their own required fields
     @Column(columnDefinition = "TEXT")
@@ -56,8 +55,8 @@ public class ModelEvent {
 
     public static final String EMPTY_MAP_STRING = "{}";
 
-    public String getId() {
-        return id;
+    public String getEventId() {
+        return eventId;
     }
 
     public String getRequestId() {
@@ -72,8 +71,8 @@ public class ModelEvent {
         return timestampMs;
     }
 
-    public String getActorChain() {
-        return actorChain != null ? actorChain : EMPTY_MAP_STRING;
+    public String getActor() {
+        return actor;
     }
 
     public String getOperation() {

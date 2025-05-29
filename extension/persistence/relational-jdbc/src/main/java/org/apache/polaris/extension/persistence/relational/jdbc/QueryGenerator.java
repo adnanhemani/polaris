@@ -29,11 +29,7 @@ import org.apache.polaris.core.entity.PolarisEntityCore;
 import org.apache.polaris.core.entity.PolarisEntityId;
 import org.apache.polaris.core.entity.PolarisEntityType;
 import org.apache.polaris.core.policy.PolicyEntity;
-import org.apache.polaris.extension.persistence.relational.jdbc.models.Converter;
-import org.apache.polaris.extension.persistence.relational.jdbc.models.ModelEntity;
-import org.apache.polaris.extension.persistence.relational.jdbc.models.ModelGrantRecord;
-import org.apache.polaris.extension.persistence.relational.jdbc.models.ModelPolicyMappingRecord;
-import org.apache.polaris.extension.persistence.relational.jdbc.models.ModelPrincipalAuthenticationData;
+import org.apache.polaris.extension.persistence.relational.jdbc.models.*;
 
 public class QueryGenerator {
 
@@ -201,6 +197,8 @@ public class QueryGenerator {
       tableName = "PRINCIPAL_AUTHENTICATION_DATA";
     } else if (entityClass.equals(ModelPolicyMappingRecord.class)) {
       tableName = "POLICY_MAPPING_RECORD";
+    } else if (entityClass.equals(ModelEvent.class)) {
+      tableName = "EVENTS";
     } else {
       throw new IllegalArgumentException("Unsupported entity class: " + entityClass.getName());
     }

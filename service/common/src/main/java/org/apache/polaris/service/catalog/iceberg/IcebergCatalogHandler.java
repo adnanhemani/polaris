@@ -73,6 +73,7 @@ import org.apache.iceberg.rest.responses.ListTablesResponse;
 import org.apache.iceberg.rest.responses.LoadTableResponse;
 import org.apache.iceberg.rest.responses.LoadViewResponse;
 import org.apache.iceberg.rest.responses.UpdateNamespacePropertiesResponse;
+import org.apache.polaris.core.auth.AuthenticatedPolarisPrincipal;
 import org.apache.polaris.core.auth.PolarisAuthorizableOperation;
 import org.apache.polaris.core.auth.PolarisAuthorizer;
 import org.apache.polaris.core.config.FeatureConfiguration;
@@ -99,6 +100,9 @@ import org.apache.polaris.service.catalog.SupportsNotifications;
 import org.apache.polaris.service.catalog.common.CatalogHandler;
 import org.apache.polaris.service.config.ReservedProperties;
 import org.apache.polaris.service.context.catalog.CallContextCatalogFactory;
+import org.apache.polaris.service.events.AfterTableCreatedEvent;
+import org.apache.polaris.service.events.BeforeTableCreatedEvent;
+import org.apache.polaris.service.events.PolarisEventListener;
 import org.apache.polaris.service.http.IcebergHttpUtil;
 import org.apache.polaris.service.http.IfNoneMatch;
 import org.apache.polaris.service.types.NotificationRequest;
@@ -128,6 +132,7 @@ public class IcebergCatalogHandler extends CatalogHandler implements AutoCloseab
   private final CallContextCatalogFactory catalogFactory;
   private final ReservedProperties reservedProperties;
   private final CatalogHandlerUtils catalogHandlerUtils;
+  private final PolarisEventListener polarisEventListener;
 
   // Catalog instance will be initialized after authorizing resolver successfully resolves
   // the catalog entity.
@@ -148,13 +153,15 @@ public class IcebergCatalogHandler extends CatalogHandler implements AutoCloseab
       String catalogName,
       PolarisAuthorizer authorizer,
       ReservedProperties reservedProperties,
-      CatalogHandlerUtils catalogHandlerUtils) {
+      CatalogHandlerUtils catalogHandlerUtils,
+      PolarisEventListener polarisEventListener) {
     super(callContext, entityManager, securityContext, catalogName, authorizer);
     this.metaStoreManager = metaStoreManager;
     this.userSecretsManager = userSecretsManager;
     this.catalogFactory = catalogFactory;
     this.reservedProperties = reservedProperties;
     this.catalogHandlerUtils = catalogHandlerUtils;
+    this.polarisEventListener = polarisEventListener;
   }
 
   /**
@@ -393,8 +400,10 @@ public class IcebergCatalogHandler extends CatalogHandler implements AutoCloseab
             .withWriteOrder(request.writeOrder())
             .setProperties(reservedProperties.removeReservedProperties(request.properties()))
             .build();
-    return catalogHandlerUtils.createTable(
-        baseCatalog, namespace, requestWithoutReservedProperties);
+    LoadTableResponse resp = catalogHandlerUtils.createTable(
+            baseCatalog, namespace, requestWithoutReservedProperties);
+    polarisEventListener.onAfterTableCreated(new AfterTableCreatedEvent(identifier, resp.tableMetadata(), request.properties().get("request_id"), (AuthenticatedPolarisPrincipal) securityContext.getUserPrincipal()), callContext.getRealmContext());
+    return resp;
   }
 
   /**
@@ -442,7 +451,7 @@ public class IcebergCatalogHandler extends CatalogHandler implements AutoCloseab
 
     if (table instanceof BaseTable baseTable) {
       TableMetadata tableMetadata = baseTable.operations().current();
-      return buildLoadTableResponseWithDelegationCredentials(
+      LoadTableResponse resp = buildLoadTableResponseWithDelegationCredentials(
               tableIdentifier,
               tableMetadata,
               Set.of(
@@ -451,6 +460,8 @@ public class IcebergCatalogHandler extends CatalogHandler implements AutoCloseab
                   PolarisStorageActions.LIST),
               SNAPSHOTS_ALL)
           .build();
+      polarisEventListener.onAfterTableCreated(new AfterTableCreatedEvent(tableIdentifier, resp.tableMetadata(), request.properties().get("request_id"), (AuthenticatedPolarisPrincipal) securityContext.getUserPrincipal()), callContext.getRealmContext());
+      return resp;
     } else if (table instanceof BaseMetadataTable) {
       // metadata tables are loaded on the client side, return NoSuchTableException for now
       throw new NoSuchTableException("Table does not exist: %s", tableIdentifier.toString());

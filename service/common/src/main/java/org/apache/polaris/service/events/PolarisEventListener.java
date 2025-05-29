@@ -18,11 +18,16 @@
  */
 package org.apache.polaris.service.events;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.polaris.core.context.RealmContext;
+
 /**
  * Represents an event listener that can respond to notable moments during Polaris's execution.
  * Event details are documented under the event objects themselves.
  */
 public abstract class PolarisEventListener {
+  protected static final ObjectMapper MAPPER = new ObjectMapper();
+
   /** {@link BeforeRequestRateLimitedEvent} */
   public void onBeforeRequestRateLimited(BeforeRequestRateLimitedEvent event) {}
 
@@ -55,4 +60,16 @@ public abstract class PolarisEventListener {
 
   /** {@link AfterTaskAttemptedEvent} */
   public void onAfterTaskAttempted(AfterTaskAttemptedEvent event) {}
+
+  /** {@link BeforeTableCreatedEvent} */
+  public void onBeforeTableCreated(BeforeTableCreatedEvent event) {}
+
+  /** {@link AfterTableCreatedEvent} */
+  public void onAfterTableCreated(AfterTableCreatedEvent event, RealmContext realmContext) {}
+
+//  /** {@link BeforeCatalogCreatedEvent} */
+//  public void onBeforeCatalogCreated(BeforeCatalogCreatedEvent event) {}
+
+  /** {@link AfterCatalogCreatedEvent} */
+  public void onAfterCatalogCreated(AfterCatalogCreatedEvent event, RealmContext realmContext) {}
 }

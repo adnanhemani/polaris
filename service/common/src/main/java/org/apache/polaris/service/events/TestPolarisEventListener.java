@@ -21,6 +21,10 @@ package org.apache.polaris.service.events;
 import com.google.common.collect.Streams;
 import io.smallrye.common.annotation.Identifier;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import org.apache.polaris.core.context.RealmContext;
+import org.apache.polaris.core.persistence.MetaStoreManagerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 

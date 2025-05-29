@@ -16,21 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.polaris.service.events;
 
 import org.apache.iceberg.catalog.TableIdentifier;
 
-public class BeforeTableRefreshedEvent extends PolarisEvent {
+/**
+ * Emitted when Polaris intends to create a table.
+ *
+ */
+public class BeforeTableCreatedEvent extends PolarisEvent {
+    private final TableIdentifier identifier;
+    private final String requestId;
 
-    private final TableIdentifier tableIdentifier;
+    public BeforeTableCreatedEvent(TableIdentifier tableIdentifier, String requestId) {
+        this.identifier = tableIdentifier;
+        this.requestId = requestId;
+    }
 
-    /**
-     * Emitted when Polaris intends to refresh its known version of a table's metadata by fetching the
-     * latest.
-     *
-     * @param tableIdentifier The identifier of the table being refreshed.
-     */
-    public BeforeTableRefreshedEvent(TableIdentifier tableIdentifier) {
-        this.tableIdentifier = tableIdentifier;
+    public TableIdentifier getIdentifier() {
+        return identifier;
+    }
+
+    public String getRequestId() {
+        return requestId;
     }
 }

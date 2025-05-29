@@ -33,20 +33,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.polaris.core.PolarisCallContext;
-import org.apache.polaris.core.entity.AsyncTaskType;
-import org.apache.polaris.core.entity.EntityNameLookupRecord;
-import org.apache.polaris.core.entity.PolarisBaseEntity;
-import org.apache.polaris.core.entity.PolarisChangeTrackingVersions;
-import org.apache.polaris.core.entity.PolarisEntity;
-import org.apache.polaris.core.entity.PolarisEntityConstants;
-import org.apache.polaris.core.entity.PolarisEntityCore;
-import org.apache.polaris.core.entity.PolarisEntityId;
-import org.apache.polaris.core.entity.PolarisEntitySubType;
-import org.apache.polaris.core.entity.PolarisEntityType;
-import org.apache.polaris.core.entity.PolarisGrantRecord;
-import org.apache.polaris.core.entity.PolarisPrincipalSecrets;
-import org.apache.polaris.core.entity.PolarisPrivilege;
-import org.apache.polaris.core.entity.PolarisTaskConstants;
+import org.apache.polaris.core.entity.*;
 import org.apache.polaris.core.persistence.*;
 import org.apache.polaris.core.persistence.dao.entity.BaseResult;
 import org.apache.polaris.core.persistence.dao.entity.ChangeTrackingResult;
@@ -2317,6 +2304,12 @@ public class TransactionalMetaStoreManagerImpl extends BaseMetaStoreManager {
                 entityType,
                 entityCatalogId,
                 entityId));
+  }
+
+  @Override
+  public void flushEventsToPersistence(@Nonnull PolarisCallContext callCtx, @Nonnull List<PolarisEvent> events) {
+    TransactionalPersistence ms = ((TransactionalPersistence) callCtx.getMetaStore());
+    ms.writeEvents(events);
   }
 
   /** {@inheritDoc} */
