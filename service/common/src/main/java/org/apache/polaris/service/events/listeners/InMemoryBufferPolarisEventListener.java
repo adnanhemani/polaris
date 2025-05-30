@@ -23,10 +23,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.apache.polaris.core.config.FeatureConfiguration;
 import org.apache.polaris.core.config.PolarisConfigurationStore;
-import org.apache.polaris.core.context.RealmContext;
+import org.apache.polaris.core.context.CallContext;
 import org.apache.polaris.core.entity.PolarisEvent;
 import org.apache.polaris.core.persistence.MetaStoreManagerFactory;
-import org.apache.polaris.service.events.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +33,7 @@ import java.util.List;
 /** Event listener that buffers in memory and then dumps to persistence. */
 @ApplicationScoped
 @Identifier("persistence-in-memory-buffer")
-public class InMemoryBufferPolarisEventListener extends PolarisEventListener {
+public class InMemoryBufferPolarisEventListener extends PersistencePolarisEventListener {
     MetaStoreManagerFactory metaStoreManagerFactory;
     PolarisConfigurationStore polarisConfigurationStore;
 
@@ -52,87 +51,10 @@ public class InMemoryBufferPolarisEventListener extends PolarisEventListener {
     }
 
     @Override
-    public void onBeforeRequestRateLimited(BeforeRequestRateLimitedEvent event) {
-    }
-
-    @Override
-    public void onBeforeTableCommited(BeforeTableCommitedEvent event) {
-    }
-
-    @Override
-    public void onAfterTableCommited(AfterTableCommitedEvent event) {
-    }
-
-    @Override
-    public void onBeforeViewCommited(BeforeViewCommitedEvent event) {
-    }
-
-    @Override
-    public void onAfterViewCommited(AfterViewCommitedEvent event) {
-    }
-
-    @Override
-    public void onBeforeTableRefreshed(BeforeTableRefreshedEvent event) {
-    }
-
-    @Override
-    public void onAfterTableRefreshed(AfterTableRefreshedEvent event) {
-    }
-
-    @Override
-    public void onBeforeViewRefreshed(BeforeViewRefreshedEvent event) {
-    }
-
-    @Override
-    public void onAfterViewRefreshed(AfterViewRefreshedEvent event) {
-    }
-
-    @Override
-    public void onBeforeTaskAttempted(BeforeTaskAttemptedEvent event) {
-    }
-
-    @Override
-    public void onAfterTaskAttempted(AfterTaskAttemptedEvent event) {
-    }
-
-    @Override
-    public void onBeforeTableCreated(BeforeTableCreatedEvent event) {
-    }
-
-    @Override
-    public void onAfterTableCreated(AfterTableCreatedEvent event, RealmContext realmContext) {
-        PolarisEvent polarisEvent = new PolarisEvent(
-                event.getEventId(),
-                event.getRequestId(),
-                event.getEventCount(),
-                event.getTimestampMs(),
-                event.getActor(),
-                event.getIcebergOperationType(),
-                event.getPolarisCustomOperationType(),
-                event.getResourceType(),
-                event.getTableIdentifier().toString());
-        addToBuffer(polarisEvent, realmContext);
-    }
-
-    @Override
-    public void onAfterCatalogCreated(AfterCatalogCreatedEvent event, RealmContext realmContext) {
-        PolarisEvent polarisEvent = new PolarisEvent(
-                event.getEventId(),
-                event.getRequestId(),
-                event.getEventCount(),
-                event.getTimestampMs(),
-                event.getActor(),
-                event.getIcebergOperationType(),
-                event.getPolarisCustomOperationType(),
-                event.getResourceType(),
-                event.getCatalogName());
-        addToBuffer(polarisEvent, realmContext);
-    }
-
-    private void addToBuffer(PolarisEvent polarisEvent, RealmContext realmContext) {
+    void addToBuffer(PolarisEvent polarisEvent, CallContext callCtx) {
         buffer.add(polarisEvent);
         if (System.currentTimeMillis() - buffer.getFirst().getTimestampMs() > this.timeToFlush) {
-            metaStoreManagerFactory.getOrCreateSessionSupplier(realmContext).get().writeEvents(buffer);
+            metaStoreManagerFactory.getOrCreateSessionSupplier(callCtx.getRealmContext()).get().writeEvents(buffer);
             buffer.clear();
         }
     }

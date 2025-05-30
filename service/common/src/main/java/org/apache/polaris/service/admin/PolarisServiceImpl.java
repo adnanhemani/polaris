@@ -156,7 +156,7 @@ public class PolarisServiceImpl
     validateConnectionConfigInfo(catalog);
     Catalog newCatalog = new CatalogEntity(adminService.createCatalog(request)).asCatalog();
     LOGGER.info("Created new catalog {}", newCatalog);
-    polarisEventListener.onAfterCatalogCreated(new AfterCatalogCreatedEvent(newCatalog.getName(), requestId, (AuthenticatedPolarisPrincipal) securityContext.getUserPrincipal()), realmContext);
+    polarisEventListener.onAfterCatalogCreated(new AfterCatalogCreatedEvent(newCatalog.getName(), requestId, (AuthenticatedPolarisPrincipal) securityContext.getUserPrincipal()), callContext);
     return Response.status(Response.Status.CREATED).build();
   }
 

@@ -19,6 +19,7 @@
 package org.apache.polaris.service.events.listeners;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.polaris.core.context.CallContext;
 import org.apache.polaris.core.context.RealmContext;
 import org.apache.polaris.service.events.*;
 
@@ -66,11 +67,11 @@ public abstract class PolarisEventListener {
   public void onBeforeTableCreated(BeforeTableCreatedEvent event) {}
 
   /** {@link AfterTableCreatedEvent} */
-  public void onAfterTableCreated(AfterTableCreatedEvent event, RealmContext realmContext) {}
+  public void onAfterTableCreated(AfterTableCreatedEvent event, CallContext callCtx) {}
 
 //  /** {@link BeforeCatalogCreatedEvent} */
 //  public void onBeforeCatalogCreated(BeforeCatalogCreatedEvent event) {}
 
   /** {@link AfterCatalogCreatedEvent} */
-  public void onAfterCatalogCreated(AfterCatalogCreatedEvent event, RealmContext realmContext) {}
+  public void onAfterCatalogCreated(AfterCatalogCreatedEvent event, CallContext callCtx) {}
 }

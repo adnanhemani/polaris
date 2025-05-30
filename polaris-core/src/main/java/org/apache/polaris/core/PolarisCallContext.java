@@ -60,6 +60,9 @@ public class PolarisCallContext {
   }
 
   public static PolarisCallContext copyOf(PolarisCallContext original) {
+    if (original == null) {
+      return null;
+    }
     return new PolarisCallContext(
         original.getMetaStore().detach(),
         original.getDiagServices(),

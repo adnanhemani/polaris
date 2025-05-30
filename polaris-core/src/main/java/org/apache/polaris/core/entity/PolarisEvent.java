@@ -25,10 +25,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
 
-public class PolarisEvent {
+public class PolarisEvent implements Serializable {
     public static final String EMPTY_MAP_STRING = "{}";
 
     // to serialize/deserialize properties
