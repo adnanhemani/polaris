@@ -29,7 +29,12 @@ import org.apache.polaris.core.entity.PolarisEntityCore;
 import org.apache.polaris.core.entity.PolarisEntityId;
 import org.apache.polaris.core.entity.PolarisEntityType;
 import org.apache.polaris.core.policy.PolicyEntity;
-import org.apache.polaris.extension.persistence.relational.jdbc.models.*;
+import org.apache.polaris.extension.persistence.relational.jdbc.models.Converter;
+import org.apache.polaris.extension.persistence.relational.jdbc.models.ModelEntity;
+import org.apache.polaris.extension.persistence.relational.jdbc.models.ModelEvent;
+import org.apache.polaris.extension.persistence.relational.jdbc.models.ModelGrantRecord;
+import org.apache.polaris.extension.persistence.relational.jdbc.models.ModelPolicyMappingRecord;
+import org.apache.polaris.extension.persistence.relational.jdbc.models.ModelPrincipalAuthenticationData;
 
 public class QueryGenerator {
 

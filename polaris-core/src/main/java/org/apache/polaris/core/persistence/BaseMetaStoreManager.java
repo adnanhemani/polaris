@@ -24,10 +24,12 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Nonnull;
 
-import java.util.List;
 import java.util.Map;
 import org.apache.polaris.core.PolarisCallContext;
-import org.apache.polaris.core.entity.*;
+import org.apache.polaris.core.entity.PolarisBaseEntity;
+import org.apache.polaris.core.entity.PolarisEntityConstants;
+import org.apache.polaris.core.entity.PolarisEntitySubType;
+import org.apache.polaris.core.entity.PolarisEntityType;
 import org.apache.polaris.core.persistence.dao.entity.GenerateEntityIdResult;
 import org.apache.polaris.core.storage.PolarisStorageConfigurationInfo;
 

@@ -47,7 +47,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-#  polaris:
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
+  polaris:
+    depends_on:
+      postgres:
+        condition: service_healthy

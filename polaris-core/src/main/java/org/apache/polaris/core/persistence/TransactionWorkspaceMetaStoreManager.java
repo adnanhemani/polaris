@@ -26,7 +26,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.polaris.core.PolarisCallContext;
-import org.apache.polaris.core.entity.*;
+import org.apache.polaris.core.entity.PolarisBaseEntity;
+import org.apache.polaris.core.entity.PolarisEntity;
+import org.apache.polaris.core.entity.PolarisEntityCore;
+import org.apache.polaris.core.entity.PolarisEntityId;
+import org.apache.polaris.core.entity.PolarisEntitySubType;
+import org.apache.polaris.core.entity.PolarisEntityType;
+import org.apache.polaris.core.entity.PolarisEvent;
+import org.apache.polaris.core.entity.PolarisPrivilege;
 import org.apache.polaris.core.persistence.dao.entity.BaseResult;
 import org.apache.polaris.core.persistence.dao.entity.ChangeTrackingResult;
 import org.apache.polaris.core.persistence.dao.entity.CreateCatalogResult;
@@ -382,8 +389,8 @@ public class TransactionWorkspaceMetaStoreManager implements PolarisMetaStoreMan
   @Override
   public void flushEventsToPersistence(@Nonnull PolarisCallContext callCtx, @Nonnull List<PolarisEvent> events) {
     callCtx
-            .getDiagServices()
-            .fail("illegal_method_in_transaction_workspace", "flushEventsToPersistence");
+        .getDiagServices()
+        .fail("illegal_method_in_transaction_workspace", "flushEventsToPersistence");
   }
 
   @Override
