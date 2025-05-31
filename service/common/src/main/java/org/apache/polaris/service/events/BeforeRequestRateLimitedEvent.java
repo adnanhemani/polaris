@@ -19,7 +19,7 @@
 package org.apache.polaris.service.events;
 
 
-public class BeforeRequestRateLimitedEvent extends PolarisEvent {
+public final class BeforeRequestRateLimitedEvent extends PolarisEvent {
     private final String method;
     private final String absolutePath;
 

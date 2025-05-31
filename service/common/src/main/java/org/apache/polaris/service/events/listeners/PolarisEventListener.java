@@ -69,8 +69,8 @@ public abstract class PolarisEventListener {
   /** {@link AfterTableCreatedEvent} */
   public void onAfterTableCreated(AfterTableCreatedEvent event, CallContext callCtx) {}
 
-//  /** {@link BeforeCatalogCreatedEvent} */
-//  public void onBeforeCatalogCreated(BeforeCatalogCreatedEvent event) {}
+  /** {@link BeforeCatalogCreatedEvent} */
+  public void onBeforeCatalogCreated(BeforeCatalogCreatedEvent event) {}
 
   /** {@link AfterCatalogCreatedEvent} */
   public void onAfterCatalogCreated(AfterCatalogCreatedEvent event, CallContext callCtx) {}

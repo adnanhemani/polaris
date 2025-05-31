@@ -22,7 +22,7 @@ import org.apache.iceberg.TableMetadata;
 import org.apache.iceberg.catalog.TableIdentifier;
 
 
-public class BeforeTableCommitedEvent extends PolarisEvent {
+public final class BeforeTableCommitedEvent extends PolarisEvent {
     private final TableIdentifier tableIdentifier;
     private final TableMetadata base;
     private final TableMetadata metadata;

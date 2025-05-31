@@ -21,7 +21,7 @@ package org.apache.polaris.service.events;
 import org.apache.polaris.core.context.CallContext;
 
 
-public class AfterTaskAttemptedEvent extends PolarisEvent {
+public final class AfterTaskAttemptedEvent extends PolarisEvent {
 
     private final long taskEntityId;
     private final CallContext callContext;

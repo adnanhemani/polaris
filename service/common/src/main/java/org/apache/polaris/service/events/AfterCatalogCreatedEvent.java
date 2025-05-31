@@ -29,7 +29,7 @@ import java.util.Optional;
  * Emitted when Polaris intends to create a table.
  *
  */
-public class AfterCatalogCreatedEvent extends PolarisEvent {
+public final class AfterCatalogCreatedEvent extends PolarisEvent {
     private final String catalogName;
     private final String requestId;
     private final String actor;

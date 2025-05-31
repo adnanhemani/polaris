@@ -37,7 +37,7 @@ public class InMemoryBufferPolarisEventListener extends PersistencePolarisEventL
     MetaStoreManagerFactory metaStoreManagerFactory;
     PolarisConfigurationStore polarisConfigurationStore;
 
-    private final List<PolarisEvent> buffer = new ArrayList<>();
+    private List<PolarisEvent> buffer = new ArrayList<>();
     private final int timeToFlush;
 
     @Inject
@@ -47,15 +47,16 @@ public class InMemoryBufferPolarisEventListener extends PersistencePolarisEventL
     ) {
         this.metaStoreManagerFactory = metaStoreManagerFactory;
         this.polarisConfigurationStore = polarisConfigurationStore;
-        this.timeToFlush = polarisConfigurationStore.getConfiguration(null, FeatureConfiguration.EVENT_BUFFER_TIME_TO_FLUSH);
+        this.timeToFlush = polarisConfigurationStore.getConfiguration(null, FeatureConfiguration.EVENT_BUFFER_TIME_TO_FLUSH_IN_MS);
     }
 
     @Override
     void addToBuffer(PolarisEvent polarisEvent, CallContext callCtx) {
         buffer.add(polarisEvent);
         if (System.currentTimeMillis() - buffer.getFirst().getTimestampMs() > this.timeToFlush) {
-            metaStoreManagerFactory.getOrCreateSessionSupplier(callCtx.getRealmContext()).get().writeEvents(buffer);
-            buffer.clear();
+            List<PolarisEvent> bufferToFlush = buffer;
+            buffer = new ArrayList<>();
+            metaStoreManagerFactory.getOrCreateSessionSupplier(callCtx.getRealmContext()).get().writeEvents(bufferToFlush);
         }
     }
 }

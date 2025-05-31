@@ -70,7 +70,7 @@ public class FileBufferPolarisEventListener extends PersistencePolarisEventListe
         this.metaStoreManagerFactory = metaStoreManagerFactory;
         this.polarisConfigurationStore = polarisConfigurationStore;
         this.taskExecutor = taskExecutor;
-        this.timeToFlush = polarisConfigurationStore.getConfiguration(null, FeatureConfiguration.EVENT_BUFFER_TIME_TO_FLUSH);
+        this.timeToFlush = polarisConfigurationStore.getConfiguration(null, FeatureConfiguration.EVENT_BUFFER_TIME_TO_FLUSH_IN_MS);
 
         for (int i = 0; i < bufferShardCount; i++) {
             buffers.put(i, createShard(i));

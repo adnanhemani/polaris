@@ -25,7 +25,7 @@ import org.apache.iceberg.catalog.TableIdentifier;
  * Emitted when Polaris intends to create a table.
  *
  */
-public class BeforeTableCreatedEvent extends PolarisEvent {
+public final class BeforeTableCreatedEvent extends PolarisEvent {
     private final TableIdentifier identifier;
     private final String requestId;
 

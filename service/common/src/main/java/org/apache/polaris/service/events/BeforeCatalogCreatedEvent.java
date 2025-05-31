@@ -19,30 +19,22 @@
 
 package org.apache.polaris.service.events;
 
-import org.apache.iceberg.TableMetadata;
-import org.apache.iceberg.catalog.TableIdentifier;
 import org.apache.polaris.core.auth.AuthenticatedPolarisPrincipal;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 /**
  * Emitted when Polaris intends to create a table.
  *
  */
-public final class AfterTableCreatedEvent extends PolarisEvent {
-    private final TableIdentifier tableIdentifier;
-    private final TableMetadata tableMetadata;
+public final class BeforeCatalogCreatedEvent extends PolarisEvent {
+    private final String catalogName;
     private final String requestId;
     private final String actor;
-    private static final String icebergOperationType = "create-table";
-    private static final Optional<String> polarisCustomOperationType = Optional.empty();
-    private static final org.apache.polaris.core.entity.PolarisEvent.ResourceType resourceType = org.apache.polaris.core.entity.PolarisEvent.ResourceType.TABLE;
+    private static final org.apache.polaris.core.entity.PolarisEvent.ResourceType resourceType = org.apache.polaris.core.entity.PolarisEvent.ResourceType.CATALOG;
 
-    public AfterTableCreatedEvent(TableIdentifier identifier, TableMetadata metadata, String requestId, AuthenticatedPolarisPrincipal principal) {
-        this.tableIdentifier = identifier;
-        this.tableMetadata = metadata;
+    public BeforeCatalogCreatedEvent(String catalogName, String requestId, AuthenticatedPolarisPrincipal principal) {
+        this.catalogName = catalogName;
         this.requestId = requestId;
         if (principal != null) {
             this.actor = principal.getName();
@@ -51,6 +43,9 @@ public final class AfterTableCreatedEvent extends PolarisEvent {
         }
     }
 
+    public org.apache.polaris.core.entity.PolarisEvent.ResourceType getResourceType() {
+        return resourceType;
+    }
 
     public String getActor() {
         return actor;
@@ -60,23 +55,7 @@ public final class AfterTableCreatedEvent extends PolarisEvent {
         return requestId;
     }
 
-    public TableMetadata getTableMetadata() {
-        return tableMetadata;
-    }
-
-    public TableIdentifier getTableIdentifier() {
-        return tableIdentifier;
-    }
-
-    public String getIcebergOperationType() {
-        return icebergOperationType;
-    }
-
-    public Optional<String> getPolarisCustomOperationType() {
-        return polarisCustomOperationType;
-    }
-
-    public org.apache.polaris.core.entity.PolarisEvent.ResourceType getResourceType() {
-        return resourceType;
+    public String getCatalogName() {
+        return catalogName;
     }
 }

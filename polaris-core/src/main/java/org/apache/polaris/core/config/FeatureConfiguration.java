@@ -288,9 +288,9 @@ public class FeatureConfiguration<T> extends PolarisConfiguration<T> {
           .defaultValue(false)
           .buildFeatureConfiguration();
 
-  public static final FeatureConfiguration<Integer> EVENT_BUFFER_TIME_TO_FLUSH =
+  public static final FeatureConfiguration<Integer> EVENT_BUFFER_TIME_TO_FLUSH_IN_MS =
           PolarisConfiguration.<Integer>builder()
-                  .key("EVENT_BUFFER_TIME_TO_FLUSH")
+                  .key("EVENT_BUFFER_TIME_TO_FLUSH_IN_MS")
                   .description("The minimum amount of time (in ms) before events in the buffer flush to the persistence")
                   .defaultValue(30 * 1000) // Flush every 30s
                   .buildFeatureConfiguration();

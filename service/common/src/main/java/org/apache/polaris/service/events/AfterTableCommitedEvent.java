@@ -21,7 +21,7 @@ package org.apache.polaris.service.events;
 import org.apache.iceberg.TableMetadata;
 import org.apache.iceberg.catalog.TableIdentifier;
 
-public class AfterTableCommitedEvent extends PolarisEvent {
+public final class AfterTableCommitedEvent extends PolarisEvent {
     private final TableIdentifier tableIdentifier;
     private final TableMetadata base;
     private final TableMetadata metadata;

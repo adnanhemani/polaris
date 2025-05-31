@@ -21,7 +21,7 @@ package org.apache.polaris.service.events;
 import org.apache.iceberg.catalog.TableIdentifier;
 import org.apache.iceberg.view.ViewMetadata;
 
-public class BeforeViewCommitedEvent extends PolarisEvent {
+public final class BeforeViewCommitedEvent extends PolarisEvent {
 
     private final TableIdentifier identifier;
     private final ViewMetadata base;

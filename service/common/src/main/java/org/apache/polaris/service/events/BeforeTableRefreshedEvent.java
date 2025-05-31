@@ -20,7 +20,7 @@ package org.apache.polaris.service.events;
 
 import org.apache.iceberg.catalog.TableIdentifier;
 
-public class BeforeTableRefreshedEvent extends PolarisEvent {
+public final class BeforeTableRefreshedEvent extends PolarisEvent {
 
     private final TableIdentifier tableIdentifier;
 

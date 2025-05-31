@@ -20,7 +20,7 @@ package org.apache.polaris.service.events;
 
 import org.apache.polaris.core.context.CallContext;
 
-public class BeforeTaskAttemptedEvent extends PolarisEvent {
+public final class BeforeTaskAttemptedEvent extends PolarisEvent {
 
     private final long taskEntityId;
     private final CallContext callContext;

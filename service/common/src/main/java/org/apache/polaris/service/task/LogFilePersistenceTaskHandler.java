@@ -91,8 +91,6 @@ public class LogFilePersistenceTaskHandler implements TaskHandler {
     }
 
     // Write all events back to the metastore
-//    callContext = CallContext.getCurrentContext();
-//    callContext = CallContext.copyOf(callContext);
     metaStoreManagerFactory.getOrCreateSessionSupplier(callContext.getRealmContext()).get().writeEvents(polarisEvents);
 
     // Delete file

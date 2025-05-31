@@ -101,11 +101,6 @@ import software.amazon.awssdk.services.sts.model.Credentials;
 @TestProfile(PolarisGenericTableCatalogTest.Profile.class)
 public class PolarisGenericTableCatalogTest {
 
-    @Inject
-    PolarisMetaStoreManager polarisMetaStoreManager;
-    @Inject
-    MetaStoreManagerFactory metaStoreManagerFactory;
-
   public static class Profile implements QuarkusTestProfile {
 
     @Override
