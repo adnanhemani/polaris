@@ -35,7 +35,7 @@ import org.apache.polaris.core.persistence.MetaStoreManagerFactory;
 import org.apache.polaris.core.persistence.PolarisMetaStoreManager;
 import org.apache.polaris.service.events.AfterTaskAttemptedEvent;
 import org.apache.polaris.service.events.BeforeTaskAttemptedEvent;
-import org.apache.polaris.service.events.PolarisEventListener;
+import org.apache.polaris.service.events.listeners.PolarisEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +72,7 @@ public class TaskExecutorImpl implements TaskExecutor {
     addTaskHandler(
         new BatchFileCleanupTaskHandler(
             fileIOSupplier, Executors.newVirtualThreadPerTaskExecutor()));
+    addTaskHandler(new LogFilePersistenceTaskHandler(metaStoreManagerFactory));
   }
 
   /**

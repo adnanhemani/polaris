@@ -16,21 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.polaris.service.events;
+package org.apache.polaris.service.events.listeners;
 
+import io.smallrye.common.annotation.Identifier;
+import jakarta.enterprise.context.ApplicationScoped;
 
-public final class BeforeRequestRateLimitedEvent extends PolarisEvent {
-    private final String method;
-    private final String absolutePath;
-
-    /**
-     * Emitted before the RateLimiterFilter rejects a request due to exceeding the rate limit.
-     *
-     * @param method The request's HTTP method
-     * @param absolutePath The request's absolute path
-     */
-    public BeforeRequestRateLimitedEvent(String method, String absolutePath) {
-        this.method = method;
-        this.absolutePath = absolutePath;
-    }
-}
+/** Event listener that does nothing. */
+@ApplicationScoped
+@Identifier("no-op")
+public class NoOpPolarisEventListener extends PolarisEventListener {}

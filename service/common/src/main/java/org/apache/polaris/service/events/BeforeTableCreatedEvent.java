@@ -16,21 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.polaris.service.events;
 
+import org.apache.iceberg.catalog.TableIdentifier;
 
-public final class BeforeRequestRateLimitedEvent extends PolarisEvent {
-    private final String method;
-    private final String absolutePath;
+/**
+ * Emitted when Polaris intends to create a table.
+ *
+ */
+public final class BeforeTableCreatedEvent extends PolarisEvent {
+    private final TableIdentifier identifier;
+    private final String requestId;
 
-    /**
-     * Emitted before the RateLimiterFilter rejects a request due to exceeding the rate limit.
-     *
-     * @param method The request's HTTP method
-     * @param absolutePath The request's absolute path
-     */
-    public BeforeRequestRateLimitedEvent(String method, String absolutePath) {
-        this.method = method;
-        this.absolutePath = absolutePath;
+    public BeforeTableCreatedEvent(TableIdentifier tableIdentifier, String requestId) {
+        this.identifier = tableIdentifier;
+        this.requestId = requestId;
+    }
+
+    public TableIdentifier getIdentifier() {
+        return identifier;
+    }
+
+    public String getRequestId() {
+        return requestId;
     }
 }
