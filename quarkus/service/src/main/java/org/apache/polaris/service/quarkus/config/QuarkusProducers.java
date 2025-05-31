@@ -295,9 +295,7 @@ public class QuarkusProducers {
         config.type() == AuthenticationType.EXTERNAL ? "none" : config.tokenBroker().type();
     TokenBrokerFactory tokenBrokerFactory =
         tokenBrokerFactories.select(Identifier.Literal.of(type)).get();
-    String realmIdentifier = realmContext.getRealmIdentifier();
-    RealmContext realmContextCopy = () -> realmIdentifier;
-    return tokenBrokerFactory.apply(realmContextCopy);
+    return tokenBrokerFactory.apply(realmContext);
   }
 
   // other beans
