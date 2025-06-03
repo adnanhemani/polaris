@@ -64,7 +64,6 @@ dependencies {
   implementation("com.fasterxml.jackson.core:jackson-annotations")
   implementation(libs.kryo)
 
-
   implementation(libs.caffeine)
   implementation(libs.guava)
   implementation(libs.slf4j.api)
