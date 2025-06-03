@@ -127,6 +127,11 @@ public class PolarisEvent implements Serializable {
         this.resourceIdentifier = resourceIdentifier;
     }
 
+    // Needed for Kryo Deserialization
+    public PolarisEvent() {
+
+    }
+
     @JsonIgnore
     public void setAdditionalParametersAsMap(Map<String, String> properties) {
         try {

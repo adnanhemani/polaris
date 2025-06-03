@@ -58,6 +58,7 @@ import org.apache.polaris.core.policy.PolicyType;
 import org.apache.polaris.core.storage.PolarisStorageConfigurationInfo;
 import org.apache.polaris.core.storage.PolarisStorageIntegration;
 import org.apache.polaris.core.storage.PolarisStorageIntegrationProvider;
+import org.apache.polaris.extension.persistence.relational.jdbc.models.Converter;
 import org.apache.polaris.extension.persistence.relational.jdbc.models.ModelEntity;
 import org.apache.polaris.extension.persistence.relational.jdbc.models.ModelEvent;
 import org.apache.polaris.extension.persistence.relational.jdbc.models.ModelGrantRecord;
@@ -204,13 +205,26 @@ public class JdbcBasePersistenceImpl implements BasePersistence, IntegrationPers
 
   @Override
   public void writeEvents(@Nonnull List<PolarisEvent> events) {
+    int batchSize = 10;
+    List<List<Converter<PolarisEvent>>> batchedModelEvents = new ArrayList<>();
     for (PolarisEvent event : events) {
       ModelEvent modelEvent = ModelEvent.fromEvent(event);
-      try {
-        datasourceOperations.executeUpdate(generateInsertQuery(modelEvent, realmId));
-      } catch (SQLException e) {
-        throw new RuntimeException(String.format("Failed to write entity due to %s", e.getMessage()), e);
+      if (batchedModelEvents.isEmpty() || batchedModelEvents.getLast().size() >= batchSize) {
+        batchedModelEvents.add(new ArrayList<>());
       }
+      batchedModelEvents.getLast().add(modelEvent);
+    }
+
+    try {
+      datasourceOperations.runWithinTransaction(
+              statement -> {
+                  for (List<Converter<PolarisEvent>> batchedModelEvent : batchedModelEvents) {
+                      statement.executeUpdate(generateMultipleInsertQuery(batchedModelEvent, realmId));
+                  }
+                return true;
+              });
+    } catch (SQLException e) {
+      throw new RuntimeException(String.format("Failed to write events due to %s", e.getMessage()), e);
     }
   }
 

@@ -21,6 +21,7 @@ package org.apache.polaris.extension.persistence.relational.jdbc;
 import com.google.common.annotations.VisibleForTesting;
 import jakarta.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import org.apache.polaris.core.entity.PolarisBaseEntity;
 import org.apache.polaris.core.entity.PolarisEntityCore;
 import org.apache.polaris.core.entity.PolarisEntityId;
 import org.apache.polaris.core.entity.PolarisEntityType;
+import org.apache.polaris.core.entity.PolarisEvent;
 import org.apache.polaris.core.policy.PolicyEntity;
 import org.apache.polaris.extension.persistence.relational.jdbc.models.Converter;
 import org.apache.polaris.extension.persistence.relational.jdbc.models.ModelEntity;
@@ -114,6 +116,31 @@ public class QueryGenerator {
     String valuesString = String.join(", ", values);
 
     return "INSERT INTO " + tableName + " (" + columns + ") VALUES (" + valuesString + ")";
+  }
+
+  public static <T> String generateMultipleInsertQuery(
+          @Nonnull List<Converter<T>> entities, @Nonnull String realmId) {
+    String tableName = getTableName(entities.getFirst().getClass());
+    if (entities.isEmpty()) {
+      throw new IllegalArgumentException("Empty entities");
+    }
+    Map<String, Object> obj = entities.stream().findFirst().get().toMap();
+    List<String> columnNames = new ArrayList<>(obj.keySet());
+    columnNames.add("realm_id");
+    String columns = String.join(", ", columnNames);
+
+    List<String> allObjValues = new ArrayList<>();
+    for (Converter<T> entity : entities) {
+      List<String> values =
+              new ArrayList<>(entity.toMap().values().stream().map(val -> "'" + val.toString() + "'").toList());
+      values.add("'" + realmId + "'");
+      String valuesString = "(" + String.join(", ", values) + ")";
+      allObjValues.add(valuesString);
+    }
+
+    String valuesString = String.join(", ", allObjValues);
+
+    return "INSERT INTO " + tableName + " (" + columns + ") VALUES " + valuesString;
   }
 
   public static <T> String generateUpdateQuery(

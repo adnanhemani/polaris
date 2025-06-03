@@ -294,4 +294,18 @@ public class FeatureConfiguration<T> extends PolarisConfiguration<T> {
                   .description("The minimum amount of time (in ms) before events in the buffer flush to the persistence")
                   .defaultValue(30 * 1000) // Flush every 30s
                   .buildFeatureConfiguration();
+
+  public static final FeatureConfiguration<Integer> EVENT_BUFFER_NUM_SHARDS =
+          PolarisConfiguration.<Integer>builder()
+                  .key("EVENT_BUFFER_NUM_SHARDS")
+                  .description("The amount of shards available for event buffers")
+                  .defaultValue(5)
+                  .buildFeatureConfiguration();
+
+  public static final FeatureConfiguration<Integer> EVENT_BUFFER_NUM_THREADS =
+          PolarisConfiguration.<Integer>builder()
+                  .key("EVENT_BUFFER_NUM_SHARDS")
+                  .description("The amount of threads available for processing event buffers")
+                  .defaultValue(1)
+                  .buildFeatureConfiguration();
 }
