@@ -82,6 +82,7 @@ import org.apache.polaris.service.config.RealmEntityManagerFactory;
 import org.apache.polaris.service.config.ReservedProperties;
 import org.apache.polaris.service.events.AfterCatalogCreatedEvent;
 import org.apache.polaris.service.events.BeforeCatalogCreatedEvent;
+import org.apache.polaris.service.events.PolarisEvent;
 import org.apache.polaris.service.events.listeners.PolarisEventListener;
 import org.apache.polaris.service.types.PolicyIdentifier;
 import org.slf4j.Logger;
@@ -150,7 +151,7 @@ public class PolarisServiceImpl
   @Override
   public Response createCatalog(
       CreateCatalogRequest request, RealmContext realmContext, SecurityContext securityContext) {
-    String requestId = UUID.randomUUID().toString();
+    String requestId = PolarisEvent.createRequestId();
     polarisEventListener.onBeforeCatalogCreated(new BeforeCatalogCreatedEvent(request.getCatalog().getName(), requestId, (AuthenticatedPolarisPrincipal) securityContext.getUserPrincipal()));
     PolarisAdminService adminService = newAdminService(realmContext, securityContext);
     Catalog catalog = request.getCatalog();

@@ -25,8 +25,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
 public class ModelEvent implements Converter<PolarisEvent> {
     // event id
@@ -35,20 +33,14 @@ public class ModelEvent implements Converter<PolarisEvent> {
     // id of the request that generated this event
     private String requestId;
 
-    // amount of events duplicate events that were generated
-    private long eventCount;
+    // event type that was created
+    private String eventType;
 
     // timestamp in epoch milliseconds of when this event was emitted
     private long timestampMs;
 
     // polaris principal who took this action
-    private String actor;
-
-    // Operation type, as defined by the Iceberg Events API spec
-    private String icebergOperationType;
-
-    // Optional field that represents the Polaris custom events that are not modeled by the Iceberg Events API spec
-    private String polarisCustomOperationType;
+    private String principalName;
 
     // Enum that states the type of resource was being operated on
     private PolarisEvent.ResourceType resourceType;
@@ -67,24 +59,16 @@ public class ModelEvent implements Converter<PolarisEvent> {
         return requestId;
     }
 
-    public long getEventCount() {
-        return eventCount;
+    public String getEventType() {
+        return eventType;
     }
 
     public long getTimestampMs() {
         return timestampMs;
     }
 
-    public String getActor() {
-        return actor;
-    }
-
-    public String getIcebergOperationType() {
-        return icebergOperationType;
-    }
-
-    public String getPolarisCustomOperationType() {
-        return polarisCustomOperationType;
+    public String getPrincipalName() {
+        return principalName;
     }
 
     public PolarisEvent.ResourceType getResourceType() {
@@ -109,11 +93,9 @@ public class ModelEvent implements Converter<PolarisEvent> {
                 ModelEvent.builder()
                         .eventId(rs.getString("event_id"))
                         .requestId(rs.getString("request_id"))
-                        .eventCount(rs.getLong("event_count"))
+                        .eventType(rs.getString("event_type"))
                         .timestampMs(rs.getLong("timestamp_ms"))
-                        .actor(rs.getString("actor"))
-                        .icebergOperationType(rs.getString("iceberg_operation_type"))
-                        .polarisOperationType(rs.getString("polaris_custom_operation_type"))
+                        .principalName(rs.getString("actor"))
                         .resourceType(PolarisEvent.ResourceType.valueOf(rs.getString("resource_type")))
                         .resourceIdentifier(rs.getString("resource_identifier"))
                         .additionalParameters(rs.getString("additional_parameters"))
@@ -126,11 +108,9 @@ public class ModelEvent implements Converter<PolarisEvent> {
         Map<String, Object> map = new HashMap<>();
         map.put("event_id", this.eventId);
         map.put("request_id", this.requestId);
-        map.put("event_count", this.eventCount);
+        map.put("event_type", this.eventType);
         map.put("timestamp_ms", this.timestampMs);
-        map.put("actor", this.actor);
-        map.put("iceberg_operation_type", this.icebergOperationType);
-        map.put("polaris_custom_operation_type", Objects.requireNonNullElse(polarisCustomOperationType, ""));
+        map.put("principal_name", this.principalName);
         map.put("resource_type", this.resourceType);
         map.put("resource_identifier", this.resourceIdentifier);
         map.put("additional_parameters", this.additionalParameters);
@@ -154,8 +134,8 @@ public class ModelEvent implements Converter<PolarisEvent> {
             return this;
         }
 
-        public ModelEvent.Builder eventCount(long eventCount) {
-            event.eventCount = eventCount;
+        public ModelEvent.Builder eventType(String eventType) {
+            event.eventType = eventType;
             return this;
         }
 
@@ -164,18 +144,8 @@ public class ModelEvent implements Converter<PolarisEvent> {
             return this;
         }
 
-        public ModelEvent.Builder actor(String actorChain) {
-            event.actor = actorChain;
-            return this;
-        }
-
-        public ModelEvent.Builder icebergOperationType(String icebergOperationType) {
-            event.icebergOperationType = icebergOperationType;
-            return this;
-        }
-
-        public ModelEvent.Builder polarisOperationType(String polarisCustomperationType) {
-            event.polarisCustomOperationType = polarisCustomperationType;
+        public ModelEvent.Builder principalName(String principalName) {
+            event.principalName = principalName;
             return this;
         }
 
@@ -205,11 +175,9 @@ public class ModelEvent implements Converter<PolarisEvent> {
         ModelEvent.Builder modelEventBuilder = ModelEvent.builder()
                 .eventId(event.getId())
                 .requestId(event.getRequestId())
-                .eventCount(event.getEventCount())
+                .eventType(event.getEventType())
                 .timestampMs(event.getTimestampMs())
-                .actor(event.getActor())
-                .icebergOperationType(event.getIcebergOperationType())
-                .polarisOperationType(event.getPolarisCustomOperationType())
+                .principalName(event.getPrincipalName())
                 .resourceType(event.getResourceType())
                 .resourceIdentifier(event.getResourceIdentifier())
                 .additionalParameters(event.getAdditionalParameters());
@@ -222,11 +190,9 @@ public class ModelEvent implements Converter<PolarisEvent> {
         PolarisEvent polarisEvent = new PolarisEvent(
                 model.getEventId(),
                 model.getRequestId(),
-                model.getEventCount(),
+                model.getEventType(),
                 model.getTimestampMs(),
-                model.getActor(),
-                model.getIcebergOperationType(),
-                Optional.ofNullable(model.getPolarisCustomOperationType()),
+                model.getPrincipalName(),
                 model.getResourceType(),
                 model.getResourceIdentifier()
         );

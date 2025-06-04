@@ -29,6 +29,10 @@ public abstract class PolarisEvent {
     private Integer eventCount = 1;
     private final long timestampMs = System.currentTimeMillis();
 
+    public static String createRequestId() {
+        return UUID.randomUUID().toString();
+    }
+
     public String getEventId() {
         return eventId;
     }

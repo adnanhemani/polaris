@@ -21,6 +21,7 @@ package org.apache.polaris.extension.persistence.relational.jdbc;
 import static org.apache.polaris.extension.persistence.relational.jdbc.QueryGenerator.*;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import java.sql.SQLException;
@@ -206,19 +207,13 @@ public class JdbcBasePersistenceImpl implements BasePersistence, IntegrationPers
   @Override
   public void writeEvents(@Nonnull List<PolarisEvent> events) {
     int batchSize = 10;
-    List<List<Converter<PolarisEvent>>> batchedModelEvents = new ArrayList<>();
-    for (PolarisEvent event : events) {
-      ModelEvent modelEvent = ModelEvent.fromEvent(event);
-      if (batchedModelEvents.isEmpty() || batchedModelEvents.getLast().size() >= batchSize) {
-        batchedModelEvents.add(new ArrayList<>());
-      }
-      batchedModelEvents.getLast().add(modelEvent);
-    }
 
     try {
       datasourceOperations.runWithinTransaction(
               statement -> {
-                  for (List<Converter<PolarisEvent>> batchedModelEvent : batchedModelEvents) {
+                List<List<Converter<PolarisEvent>>>  batchedModelEvents =
+                        Lists.partition(events.stream().map(e -> (Converter<PolarisEvent>) ModelEvent.fromEvent(e)).toList(), batchSize);
+                  for (var batchedModelEvent : batchedModelEvents) {
                       statement.executeUpdate(generateMultipleInsertQuery(batchedModelEvent, realmId));
                   }
                 return true;

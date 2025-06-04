@@ -19,8 +19,6 @@
 
 package org.apache.polaris.service.events;
 
-import org.apache.iceberg.TableMetadata;
-import org.apache.iceberg.catalog.TableIdentifier;
 import org.apache.polaris.core.auth.AuthenticatedPolarisPrincipal;
 
 import java.util.Optional;
@@ -32,35 +30,25 @@ import java.util.Optional;
 public final class AfterCatalogCreatedEvent extends PolarisEvent {
     private final String catalogName;
     private final String requestId;
-    private final String actor;
-    private static final String icebergOperationType = "custom";
-    private static final Optional<String> polarisCustomOperationType = Optional.of("create-catalog");
+    private final String user;
     private static final org.apache.polaris.core.entity.PolarisEvent.ResourceType resourceType = org.apache.polaris.core.entity.PolarisEvent.ResourceType.CATALOG;
 
     public AfterCatalogCreatedEvent(String catalogName, String requestId, AuthenticatedPolarisPrincipal principal) {
         this.catalogName = catalogName;
         this.requestId = requestId;
         if (principal != null) {
-            this.actor = principal.getName();
+            this.user = principal.getName();
         } else {
-            this.actor = null;
+            this.user = null;
         }
-    }
-
-    public String getIcebergOperationType() {
-        return icebergOperationType;
-    }
-
-    public Optional<String> getPolarisCustomOperationType() {
-        return polarisCustomOperationType;
     }
 
     public org.apache.polaris.core.entity.PolarisEvent.ResourceType getResourceType() {
         return resourceType;
     }
 
-    public String getActor() {
-        return actor;
+    public String getUser() {
+        return user;
     }
 
     public String getRequestId() {

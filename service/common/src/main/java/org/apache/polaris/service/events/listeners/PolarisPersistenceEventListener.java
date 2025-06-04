@@ -19,8 +19,11 @@
 
 package org.apache.polaris.service.events.listeners;
 
+import org.apache.iceberg.TableMetadataParser;
+import org.apache.iceberg.inmemory.InMemoryOutputFile;
+import org.apache.iceberg.io.OutputFile;
+import org.apache.iceberg.io.PositionOutputStream;
 import org.apache.polaris.core.context.CallContext;
-import org.apache.polaris.core.context.RealmContext;
 import org.apache.polaris.core.entity.PolarisEvent;
 import org.apache.polaris.service.events.AfterCatalogCreatedEvent;
 import org.apache.polaris.service.events.AfterTableCommitedEvent;
@@ -37,8 +40,11 @@ import org.apache.polaris.service.events.BeforeTaskAttemptedEvent;
 import org.apache.polaris.service.events.BeforeViewCommitedEvent;
 import org.apache.polaris.service.events.BeforeViewRefreshedEvent;
 
+import java.io.ByteArrayOutputStream;
+import java.util.Map;
 
-public abstract class PersistencePolarisEventListener extends PolarisEventListener {
+
+public abstract class PolarisPersistenceEventListener extends PolarisEventListener {
     @Override
     public final void onBeforeRequestRateLimited(BeforeRequestRateLimitedEvent event) {
     }
@@ -92,13 +98,14 @@ public abstract class PersistencePolarisEventListener extends PolarisEventListen
         org.apache.polaris.core.entity.PolarisEvent polarisEvent = new org.apache.polaris.core.entity.PolarisEvent(
                 event.getEventId(),
                 event.getRequestId(),
-                event.getEventCount(),
+                event.getClass().getSimpleName(),
                 event.getTimestampMs(),
-                event.getActor(),
-                event.getIcebergOperationType(),
-                event.getPolarisCustomOperationType(),
+                event.getUser(),
                 event.getResourceType(),
                 event.getTableIdentifier().toString());
+        Map<String, String> additionalParameters = Map.of("table-uuid", event.getTableMetadata().uuid(), "metadata", TableMetadataParser.toJson(event.getTableMetadata()));
+        polarisEvent.setAdditionalParameters(additionalParameters);
+
         addToBuffer(polarisEvent, callCtx);
     }
 
@@ -107,11 +114,9 @@ public abstract class PersistencePolarisEventListener extends PolarisEventListen
         org.apache.polaris.core.entity.PolarisEvent polarisEvent = new PolarisEvent(
                 event.getEventId(),
                 event.getRequestId(),
-                event.getEventCount(),
+                event.getClass().getSimpleName(),
                 event.getTimestampMs(),
-                event.getActor(),
-                event.getIcebergOperationType(),
-                event.getPolarisCustomOperationType(),
+                event.getUser(),
                 event.getResourceType(),
                 event.getCatalogName());
         addToBuffer(polarisEvent, callCtx);

@@ -70,6 +70,7 @@ import org.apache.polaris.service.catalog.common.CatalogAdapter;
 import org.apache.polaris.service.config.ReservedProperties;
 import org.apache.polaris.service.context.catalog.CallContextCatalogFactory;
 import org.apache.polaris.service.events.BeforeTableCreatedEvent;
+import org.apache.polaris.service.events.PolarisEvent;
 import org.apache.polaris.service.events.listeners.PolarisEventListener;
 import org.apache.polaris.service.http.IcebergHttpUtil;
 import org.apache.polaris.service.http.IfNoneMatch;
@@ -349,7 +350,7 @@ public class IcebergCatalogAdapter
       SecurityContext securityContext) {
     Namespace ns = decodeNamespace(namespace);
     TableIdentifier identifier = TableIdentifier.of(namespace, createTableRequest.name());
-    String requestId = UUID.randomUUID().toString();
+    String requestId = PolarisEvent.createRequestId();
     polarisEventListener.onBeforeTableCreated(new BeforeTableCreatedEvent(identifier, requestId));
     validateIcebergProperties(callContext, createTableRequest.properties());
     EnumSet<AccessDelegationMode> delegationModes =

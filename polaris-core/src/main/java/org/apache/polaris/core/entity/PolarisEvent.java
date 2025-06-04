@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.Serializable;
 import java.util.Map;
-import java.util.Optional;
 
 public class PolarisEvent implements Serializable {
     public static final String EMPTY_MAP_STRING = "{}";
@@ -41,20 +40,14 @@ public class PolarisEvent implements Serializable {
     // id of the request that generated this event
     private String requestId;
 
-    // amount of events duplicate events that were generated
-    private long eventCount;
+    // event type that was fired
+    private String eventType;
 
     // timestamp in epoch milliseconds of when this event was emitted
     private long timestampMs;
 
     // polaris principal who took this action
-    private String actor;
-
-    // Operation type, as defined by the Iceberg Events API spec
-    private String icebergOperationType;
-
-    // Optional field that represents the Polaris custom events that are not modeled by the Iceberg Events API spec
-    private String polarisCustomOperationType;
+    private String principalName;
 
     // Enum that states the type of resource was being operated on
     private ResourceType resourceType;
@@ -73,24 +66,16 @@ public class PolarisEvent implements Serializable {
         return requestId;
     }
 
-    public long getEventCount() {
-        return eventCount;
+    public String getEventType() {
+        return eventType;
     }
 
     public long getTimestampMs() {
         return timestampMs;
     }
 
-    public String getActor() {
-        return actor;
-    }
-
-    public String getIcebergOperationType() {
-        return icebergOperationType;
-    }
-
-    public String getPolarisCustomOperationType() {
-        return polarisCustomOperationType == null ? "" : polarisCustomOperationType;
+    public String getPrincipalName() {
+        return principalName;
     }
 
     public ResourceType getResourceType() {
@@ -105,24 +90,29 @@ public class PolarisEvent implements Serializable {
         return additionalParameters != null ? additionalParameters : EMPTY_MAP_STRING;
     }
 
+    public Map<String, String> getAdditionalParametersAsMap() {
+        try {
+            return additionalParameters != null ? MAPPER.readValue(this.additionalParameters, Map.class) : Map.of();
+        } catch (JsonProcessingException ex) {
+            throw new IllegalStateException(
+                    String.format("Failed to deserialize json. additionalParameters %s", this.additionalParameters), ex);
+        }
+    }
+
     @JsonCreator
     public PolarisEvent(
             @JsonProperty("id") String id,
             @JsonProperty("request_id") String requestId,
-            @JsonProperty("event_count") long eventCount,
+            @JsonProperty("event_type") String eventType,
             @JsonProperty("timestamp_ms") long timestampMs,
             @JsonProperty("actor") String actor,
-            @JsonProperty("iceberg_operation_type") String icebergOperationType,
-            @JsonProperty("polaris_custom_operation_type") Optional<String> polarisCustomOperationType,
             @JsonProperty("resource_type") ResourceType resourceType,
             @JsonProperty("resource_identifier") String resourceIdentifier) {
         this.id = id;
         this.requestId = requestId;
-        this.eventCount = eventCount;
+        this.eventType = eventType;
         this.timestampMs = timestampMs;
-        this.actor = actor;
-        this.icebergOperationType = icebergOperationType;
-        polarisCustomOperationType.ifPresent(s -> this.polarisCustomOperationType = s);
+        this.principalName = actor;
         this.resourceType = resourceType;
         this.resourceIdentifier = resourceIdentifier;
     }
@@ -133,7 +123,7 @@ public class PolarisEvent implements Serializable {
     }
 
     @JsonIgnore
-    public void setAdditionalParametersAsMap(Map<String, String> properties) {
+    public void setAdditionalParameters(Map<String, String> properties) {
         try {
             this.additionalParameters = properties == null ? null : MAPPER.writeValueAsString(properties);
         } catch (JsonProcessingException ex) {

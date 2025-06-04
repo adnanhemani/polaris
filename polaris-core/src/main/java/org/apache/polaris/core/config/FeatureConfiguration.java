@@ -304,7 +304,7 @@ public class FeatureConfiguration<T> extends PolarisConfiguration<T> {
 
   public static final FeatureConfiguration<Integer> EVENT_BUFFER_NUM_THREADS =
           PolarisConfiguration.<Integer>builder()
-                  .key("EVENT_BUFFER_NUM_SHARDS")
+                  .key("EVENT_BUFFER_NUM_THREADS")
                   .description("The amount of threads available for processing event buffers")
                   .defaultValue(1)
                   .buildFeatureConfiguration();

@@ -2323,12 +2323,6 @@ public class TransactionalMetaStoreManagerImpl extends BaseMetaStoreManager {
                 entityId));
   }
 
-  @Override
-  public void flushEventsToPersistence(@Nonnull PolarisCallContext callCtx, @Nonnull List<PolarisEvent> events) {
-    TransactionalPersistence ms = ((TransactionalPersistence) callCtx.getMetaStore());
-    ms.writeEvents(events);
-  }
-
   /** {@inheritDoc} */
   @Override
   public @Nonnull PolicyAttachmentResult attachPolicyToEntity(

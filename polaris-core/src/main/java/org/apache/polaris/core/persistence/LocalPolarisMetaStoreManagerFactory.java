@@ -41,7 +41,6 @@ import org.apache.polaris.core.persistence.dao.entity.PrincipalSecretsResult;
 import org.apache.polaris.core.persistence.transactional.TransactionalMetaStoreManagerImpl;
 import org.apache.polaris.core.persistence.transactional.TransactionalPersistence;
 import org.apache.polaris.core.storage.cache.StorageCredentialCache;
-import org.apache.polaris.core.utils.CachedSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,10 +100,7 @@ public abstract class LocalPolarisMetaStoreManagerFactory<StoreType>
     final StoreType backingStore = createBackingStore(diagnostics);
     sessionSupplierMap.put(
         realmContext.getRealmIdentifier(),
-        new CachedSupplier<>(
-          () -> createMetaStoreSession(backingStore, realmContext, rootCredentialsSet, diagnostics)));
-    // Ensure the supplier caches the first time
-    var unused = sessionSupplierMap.get(realmContext.getRealmIdentifier()).get();
+            () -> createMetaStoreSession(backingStore, realmContext, rootCredentialsSet, diagnostics));
 
     PolarisMetaStoreManager metaStoreManager = createNewMetaStoreManager();
     metaStoreManagerMap.put(realmContext.getRealmIdentifier(), metaStoreManager);

@@ -23,8 +23,6 @@ import org.apache.iceberg.TableMetadata;
 import org.apache.iceberg.catalog.TableIdentifier;
 import org.apache.polaris.core.auth.AuthenticatedPolarisPrincipal;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -35,9 +33,7 @@ public final class AfterTableCreatedEvent extends PolarisEvent {
     private final TableIdentifier tableIdentifier;
     private final TableMetadata tableMetadata;
     private final String requestId;
-    private final String actor;
-    private static final String icebergOperationType = "create-table";
-    private static final Optional<String> polarisCustomOperationType = Optional.empty();
+    private final String user;
     private static final org.apache.polaris.core.entity.PolarisEvent.ResourceType resourceType = org.apache.polaris.core.entity.PolarisEvent.ResourceType.TABLE;
 
     public AfterTableCreatedEvent(TableIdentifier identifier, TableMetadata metadata, String requestId, AuthenticatedPolarisPrincipal principal) {
@@ -45,15 +41,15 @@ public final class AfterTableCreatedEvent extends PolarisEvent {
         this.tableMetadata = metadata;
         this.requestId = requestId;
         if (principal != null) {
-            this.actor = principal.getName();
+            this.user = principal.getName();
         } else {
-            this.actor = null;
+            this.user = null;
         }
     }
 
 
-    public String getActor() {
-        return actor;
+    public String getUser() {
+        return user;
     }
 
     public String getRequestId() {
@@ -66,14 +62,6 @@ public final class AfterTableCreatedEvent extends PolarisEvent {
 
     public TableIdentifier getTableIdentifier() {
         return tableIdentifier;
-    }
-
-    public String getIcebergOperationType() {
-        return icebergOperationType;
-    }
-
-    public Optional<String> getPolarisCustomOperationType() {
-        return polarisCustomOperationType;
     }
 
     public org.apache.polaris.core.entity.PolarisEvent.ResourceType getResourceType() {

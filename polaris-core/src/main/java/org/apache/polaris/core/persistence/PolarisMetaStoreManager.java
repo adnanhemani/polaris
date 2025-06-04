@@ -392,10 +392,6 @@ public interface PolarisMetaStoreManager
       long entityCatalogId,
       long entityId);
 
-  void flushEventsToPersistence(
-          @Nonnull PolarisCallContext callCtx,
-          @Nonnull List<PolarisEvent> events);
-
   /**
    * Indicates whether this metastore manager implementation requires entities to be reloaded via
    * {@link #loadEntitiesChangeTracking} in order to ensure the most recent versions are obtained.

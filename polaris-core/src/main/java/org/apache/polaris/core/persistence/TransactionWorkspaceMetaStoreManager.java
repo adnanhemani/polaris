@@ -387,13 +387,6 @@ public class TransactionWorkspaceMetaStoreManager implements PolarisMetaStoreMan
   }
 
   @Override
-  public void flushEventsToPersistence(@Nonnull PolarisCallContext callCtx, @Nonnull List<PolarisEvent> events) {
-    callCtx
-        .getDiagServices()
-        .fail("illegal_method_in_transaction_workspace", "flushEventsToPersistence");
-  }
-
-  @Override
   public @Nonnull PolicyAttachmentResult attachPolicyToEntity(
       @Nonnull PolarisCallContext callCtx,
       @Nonnull List<PolarisEntityCore> targetCatalogPath,

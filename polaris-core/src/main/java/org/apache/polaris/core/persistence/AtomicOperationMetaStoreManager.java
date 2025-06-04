@@ -1268,17 +1268,6 @@ public class AtomicOperationMetaStoreManager extends BaseMetaStoreManager {
 
   /** {@inheritDoc} */
   @Override
-  public void flushEventsToPersistence(
-          @Nonnull PolarisCallContext callCtx,
-          @Nonnull List<PolarisEvent> events) {
-    // get metastore we should be using
-    BasePersistence ms = callCtx.getMetaStore();
-
-    ms.writeEvents(events);
-  }
-
-  /** {@inheritDoc} */
-  @Override
   public @Nonnull PrivilegeResult grantUsageOnRoleToGrantee(
       @Nonnull PolarisCallContext callCtx,
       @Nullable PolarisEntityCore catalog,

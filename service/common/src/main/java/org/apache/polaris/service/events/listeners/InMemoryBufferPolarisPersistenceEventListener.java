@@ -33,7 +33,7 @@ import java.util.List;
 /** Event listener that buffers in memory and then dumps to persistence. */
 @ApplicationScoped
 @Identifier("persistence-in-memory-buffer")
-public class InMemoryBufferPolarisEventListener extends PersistencePolarisEventListener {
+public class InMemoryBufferPolarisPersistenceEventListener extends PolarisPersistenceEventListener {
     MetaStoreManagerFactory metaStoreManagerFactory;
     PolarisConfigurationStore polarisConfigurationStore;
 
@@ -41,7 +41,7 @@ public class InMemoryBufferPolarisEventListener extends PersistencePolarisEventL
     private final int timeToFlush;
 
     @Inject
-    public InMemoryBufferPolarisEventListener(
+    public InMemoryBufferPolarisPersistenceEventListener(
             MetaStoreManagerFactory metaStoreManagerFactory,
             PolarisConfigurationStore polarisConfigurationStore
     ) {
