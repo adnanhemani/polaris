@@ -46,7 +46,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -66,12 +65,13 @@ public class FileBufferPolarisPersistenceEventListener extends PolarisPersistenc
     //    Key: int - shard number
     //    Value: BufferShard - an object representing the directory and file where events are persisted on the filesystem
     private final HashMap<String, HashMap<Integer, BufferShard>> buffers = new HashMap<>();
-    ConcurrentHashMap<String, Future> createdFlushFutures = new ConcurrentHashMap<>();
+    ConcurrentHashMap<String, Future> activeFlushFutures = new ConcurrentHashMap<>();
 
     ScheduledExecutorService threadPool;
     private static int shardCount;
     private final int timeToFlush;
     private final Kryo kryo = new Kryo();
+    private static final String BUFFER_SHARD_PREFIX = "polaris-event-buffer-shard-";
 
 
     @Inject
@@ -135,7 +135,7 @@ public class FileBufferPolarisPersistenceEventListener extends PolarisPersistenc
     }
 
     private String getBufferDirectory(String realmId, int shardNum) {
-        return System.getProperty("java.io.tmpdir") + "/" + realmId + "/polaris-event-buffer-shard-" + shardNum + "/";
+        return System.getProperty("java.io.tmpdir") + "/" + realmId + "/" + BUFFER_SHARD_PREFIX + shardNum + "/";
     }
 
     private RealmContext getRealmContext(String realmId) {
@@ -151,18 +151,18 @@ public class FileBufferPolarisPersistenceEventListener extends PolarisPersistenc
             return;
         }
         for (File realmFile : realmFiles) {
-            LOGGER.info("Discovered orphaned event buffer potential realm: {}", realmFile.getName());
+            LOGGER.info("Discovered a potential orphaned event buffer for realm: {}", realmFile.getName());
             File[] realmBufferFiles = realmFile.listFiles();
             if (realmBufferFiles != null) {
                 for (File shardDir : realmBufferFiles) {
-                    if (!shardDir.getName().startsWith("polaris-event-buffer-shard-")) {
+                    if (!shardDir.getName().startsWith(BUFFER_SHARD_PREFIX)) {
                         continue;
                     }
                     for (File bufferFile : shardDir.listFiles()) {
                         LOGGER.info("Queued file flush for orphaned event buffer file: {}", bufferFile.getAbsolutePath());
                         FileFlushTask task = new FileFlushTask(bufferFile.getAbsolutePath(), realmFile.getName());
-                        Future<?> future = threadPool.submit(task);
-                        if (createdFlushFutures.putIfAbsent(bufferFile.getAbsolutePath(), future) != null) {
+                        Future future = threadPool.submit(task);
+                        if (activeFlushFutures.putIfAbsent(bufferFile.getAbsolutePath(), future) != null) {
                             // Other tasks are working on this file, cancel this task
                             future.cancel(false);
                         }
@@ -203,7 +203,7 @@ public class FileBufferPolarisPersistenceEventListener extends PolarisPersistenc
             if (bufferFiles != null) {
                 // Get all files except for the current one
                 String currentFile = Arrays.stream(bufferFiles).map(File::getAbsolutePath).max(String::compareTo).orElse(null);
-                Arrays.stream(bufferFiles).map(File::getAbsolutePath).filter(file -> !file.equals(currentFile) && ! createdFlushFutures.containsKey(file)).forEach(filesToFlush::add);
+                Arrays.stream(bufferFiles).map(File::getAbsolutePath).filter(file -> !file.equals(currentFile) && ! activeFlushFutures.containsKey(file)).forEach(filesToFlush::add);
 
                 // Get the buffer start time from the file name
                 String[] fileDeconstructed = currentFile.split("-");
@@ -215,7 +215,7 @@ public class FileBufferPolarisPersistenceEventListener extends PolarisPersistenc
             }
             for (String file : filesToFlush) {
                 Future future = threadPool.submit(new FileFlushTask(file, realmId));
-                if (createdFlushFutures.putIfAbsent(file, future) != null) {
+                if (activeFlushFutures.putIfAbsent(file, future) != null) {
                     // Some other task has been created for this file, cancel this one.
                     future.cancel(true);
                 }
@@ -246,7 +246,7 @@ public class FileBufferPolarisPersistenceEventListener extends PolarisPersistenc
                 // Possibly end of file reached
                 if (!(e.getCause() instanceof EOFException) && !(e instanceof KryoBufferUnderflowException)) {
                     LOGGER.error("Failed to read events from file {}", file, e);
-                    createdFlushFutures.remove(this.file);
+                    activeFlushFutures.remove(this.file);
                     return;
                 }
             } catch (IOException e) {
@@ -263,14 +263,14 @@ public class FileBufferPolarisPersistenceEventListener extends PolarisPersistenc
             } catch (RuntimeException e) {
                 LOGGER.error("Failed to write events to meta store", e);
                 Future future = threadPool.submit(new FileFlushTask(this.file, realmId));
-                createdFlushFutures.put(this.file, future);
+                activeFlushFutures.put(this.file, future);
                 return;
             }
 
             // Delete file
             File file = new File(this.file);
             file.delete();
-            createdFlushFutures.remove(this.file);
+            activeFlushFutures.remove(this.file);
         }
     }
 }

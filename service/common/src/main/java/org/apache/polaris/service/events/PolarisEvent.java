@@ -26,7 +26,6 @@ import java.util.UUID;
  */
 public abstract class PolarisEvent {
     private final String eventId = UUID.randomUUID().toString();
-    private Integer eventCount = 1;
     private final long timestampMs = System.currentTimeMillis();
 
     public static String createRequestId() {
@@ -35,10 +34,6 @@ public abstract class PolarisEvent {
 
     public String getEventId() {
         return eventId;
-    }
-
-    public int getEventCount() {
-        return eventCount;
     }
 
     public long getTimestampMs() {
