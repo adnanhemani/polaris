@@ -308,4 +308,12 @@ public class FeatureConfiguration<T> extends PolarisConfiguration<T> {
                   .description("The amount of threads available for processing event buffers")
                   .defaultValue(1)
                   .buildFeatureConfiguration();
+
+  public static final FeatureConfiguration<Integer> EVENT_BUFFER_MAX_SIZE =
+          PolarisConfiguration.<Integer>builder()
+                  .key("EVENT_BUFFER_MAX_SIZE")
+                  .description("The maximum amount of events allowed in a buffer for processing event buffers. " +
+                          "If a buffer goes over this size, it will be dumped to the sink.")
+                  .defaultValue(5)
+                  .buildFeatureConfiguration();
 }
