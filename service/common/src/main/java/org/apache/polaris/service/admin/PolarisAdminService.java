@@ -116,6 +116,7 @@ import org.apache.polaris.core.storage.azure.AzureStorageConfigurationInfo;
 import org.apache.polaris.service.catalog.common.CatalogHandler;
 import org.apache.polaris.service.config.ReservedProperties;
 import org.apache.polaris.service.task.BatchFileCleanupTaskHandler;
+import org.apache.polaris.service.task.TaskExecutor;
 import org.apache.polaris.service.types.PolicyIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,6 +142,7 @@ public class PolarisAdminService {
   private final PolarisMetaStoreManager metaStoreManager;
   private final UserSecretsManager userSecretsManager;
   private final ReservedProperties reservedProperties;
+  private final TaskExecutor taskExecutor;
 
   // Initialized in the authorize methods.
   private PolarisResolutionManifest resolutionManifest = null;
@@ -152,11 +154,13 @@ public class PolarisAdminService {
       @NotNull UserSecretsManager userSecretsManager,
       @NotNull SecurityContext securityContext,
       @NotNull PolarisAuthorizer authorizer,
-      @NotNull ReservedProperties reservedProperties) {
+      @NotNull ReservedProperties reservedProperties,
+      @NotNull TaskExecutor taskExecutor) {
     this.callContext = callContext;
     this.entityManager = entityManager;
     this.metaStoreManager = metaStoreManager;
     this.securityContext = securityContext;
+    this.taskExecutor = taskExecutor;
     PolarisDiagnostics diagServices = callContext.getPolarisCallContext().getDiagServices();
     diagServices.checkNotNull(securityContext, "null_security_context");
     diagServices.checkNotNull(securityContext.getUserPrincipal(), "null_security_context");
@@ -771,9 +775,10 @@ public class PolarisAdminService {
             .setName(UUID.randomUUID().toString())
             .setId(metaStoreManager.generateNewEntityId(getCurrentPolarisContext()).getId())
             .setCreateTimestamp(getCurrentPolarisContext().getClock().millis())
-            .withTaskType(AsyncTaskType.BATCH_FILE_CLEANUP)
+            .withTaskType(AsyncTaskType.SAMPLE_TASK)
             .build();
     metaStoreManager.createEntityIfNotExists(getCurrentPolarisContext(), null, sampleTask);
+    taskExecutor.addTaskHandlerContext(sampleTask.getId(), callContext);
     return PolarisEntity.of(catalogResult.getCatalog());
   }
 

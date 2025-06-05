@@ -24,10 +24,10 @@ import org.apache.polaris.core.entity.AsyncTaskType;
 import org.apache.polaris.core.entity.TaskEntity;
 import org.apache.polaris.core.persistence.MetaStoreManagerFactory;
 
-public class SampleTask implements TaskHandler {
+public class SampleTaskHandler implements TaskHandler {
     MetaStoreManagerFactory metaStoreManagerFactory;
 
-    public SampleTask(MetaStoreManagerFactory metaStoreManagerFactory) {
+    public SampleTaskHandler(MetaStoreManagerFactory metaStoreManagerFactory) {
         this.metaStoreManagerFactory = metaStoreManagerFactory;
     }
 

@@ -78,6 +78,7 @@ import org.apache.polaris.service.admin.api.PolarisPrincipalRolesApiService;
 import org.apache.polaris.service.admin.api.PolarisPrincipalsApiService;
 import org.apache.polaris.service.config.RealmEntityManagerFactory;
 import org.apache.polaris.service.config.ReservedProperties;
+import org.apache.polaris.service.task.TaskExecutor;
 import org.apache.polaris.service.types.PolicyIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,6 +96,7 @@ public class PolarisServiceImpl
   private final UserSecretsManagerFactory userSecretsManagerFactory;
   private final CallContext callContext;
   private final ReservedProperties reservedProperties;
+  private final TaskExecutor taskExecutor;
 
   @Inject
   public PolarisServiceImpl(
@@ -103,13 +105,15 @@ public class PolarisServiceImpl
       UserSecretsManagerFactory userSecretsManagerFactory,
       PolarisAuthorizer polarisAuthorizer,
       CallContext callContext,
-      ReservedProperties reservedProperties) {
+      ReservedProperties reservedProperties,
+      TaskExecutor taskExecutor) {
     this.entityManagerFactory = entityManagerFactory;
     this.metaStoreManagerFactory = metaStoreManagerFactory;
     this.userSecretsManagerFactory = userSecretsManagerFactory;
     this.polarisAuthorizer = polarisAuthorizer;
     this.callContext = callContext;
     this.reservedProperties = reservedProperties;
+    this.taskExecutor = taskExecutor;
     // FIXME: This is a hack to set the current context for downstream calls.
     CallContext.setCurrentContext(callContext);
   }
@@ -135,7 +139,8 @@ public class PolarisServiceImpl
         userSecretsManager,
         securityContext,
         polarisAuthorizer,
-        reservedProperties);
+        reservedProperties,
+        taskExecutor);
   }
 
   /** From PolarisCatalogsApiService */

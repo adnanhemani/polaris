@@ -92,6 +92,7 @@ import org.apache.polaris.core.catalog.PolarisCatalogHelpers;
 import org.apache.polaris.core.config.BehaviorChangeConfiguration;
 import org.apache.polaris.core.config.FeatureConfiguration;
 import org.apache.polaris.core.context.CallContext;
+import org.apache.polaris.core.entity.AsyncTaskType;
 import org.apache.polaris.core.entity.CatalogEntity;
 import org.apache.polaris.core.entity.NamespaceEntity;
 import org.apache.polaris.core.entity.PolarisEntity;
@@ -99,6 +100,7 @@ import org.apache.polaris.core.entity.PolarisEntityConstants;
 import org.apache.polaris.core.entity.PolarisEntitySubType;
 import org.apache.polaris.core.entity.PolarisEntityType;
 import org.apache.polaris.core.entity.PolarisTaskConstants;
+import org.apache.polaris.core.entity.TaskEntity;
 import org.apache.polaris.core.entity.table.IcebergTableLikeEntity;
 import org.apache.polaris.core.persistence.PolarisEntityManager;
 import org.apache.polaris.core.persistence.PolarisMetaStoreManager;
@@ -454,6 +456,14 @@ public class IcebergCatalog extends BaseMetastoreViewCatalog
 
   @Override
   public List<TableIdentifier> listTables(Namespace namespace) {
+    TaskEntity sampleTask = new TaskEntity.Builder()
+            .setName(UUID.randomUUID().toString())
+            .setId(metaStoreManager.generateNewEntityId(getCurrentPolarisContext()).getId())
+            .setCreateTimestamp(getCurrentPolarisContext().getClock().millis())
+            .withTaskType(AsyncTaskType.SAMPLE_TASK)
+            .build();
+    metaStoreManager.createEntityIfNotExists(getCurrentPolarisContext(), null, sampleTask);
+    taskExecutor.addTaskHandlerContext(sampleTask.getId(), callContext);
     return listTables(namespace, PageToken.readEverything()).items;
   }
 
