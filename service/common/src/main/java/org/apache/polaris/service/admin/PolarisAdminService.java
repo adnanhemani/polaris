@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.iceberg.catalog.Namespace;
@@ -76,6 +77,7 @@ import org.apache.polaris.core.catalog.PolarisCatalogHelpers;
 import org.apache.polaris.core.config.FeatureConfiguration;
 import org.apache.polaris.core.connection.AuthenticationParametersDpo;
 import org.apache.polaris.core.context.CallContext;
+import org.apache.polaris.core.entity.AsyncTaskType;
 import org.apache.polaris.core.entity.CatalogEntity;
 import org.apache.polaris.core.entity.CatalogRoleEntity;
 import org.apache.polaris.core.entity.NamespaceEntity;
@@ -88,6 +90,7 @@ import org.apache.polaris.core.entity.PolarisPrincipalSecrets;
 import org.apache.polaris.core.entity.PolarisPrivilege;
 import org.apache.polaris.core.entity.PrincipalEntity;
 import org.apache.polaris.core.entity.PrincipalRoleEntity;
+import org.apache.polaris.core.entity.TaskEntity;
 import org.apache.polaris.core.entity.table.IcebergTableLikeEntity;
 import org.apache.polaris.core.entity.table.federated.FederatedEntities;
 import org.apache.polaris.core.persistence.PolarisEntityManager;
@@ -112,6 +115,7 @@ import org.apache.polaris.core.storage.aws.AwsStorageConfigurationInfo;
 import org.apache.polaris.core.storage.azure.AzureStorageConfigurationInfo;
 import org.apache.polaris.service.catalog.common.CatalogHandler;
 import org.apache.polaris.service.config.ReservedProperties;
+import org.apache.polaris.service.task.BatchFileCleanupTaskHandler;
 import org.apache.polaris.service.types.PolicyIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -763,6 +767,13 @@ public class PolarisAdminService {
           "Cannot create Catalog %s. Catalog already exists or resolution failed",
           entity.getName());
     }
+    TaskEntity sampleTask = new TaskEntity.Builder()
+            .setName(UUID.randomUUID().toString())
+            .setId(metaStoreManager.generateNewEntityId(getCurrentPolarisContext()).getId())
+            .setCreateTimestamp(getCurrentPolarisContext().getClock().millis())
+            .withTaskType(AsyncTaskType.BATCH_FILE_CLEANUP)
+            .build();
+    metaStoreManager.createEntityIfNotExists(getCurrentPolarisContext(), null, sampleTask);
     return PolarisEntity.of(catalogResult.getCatalog());
   }
 
