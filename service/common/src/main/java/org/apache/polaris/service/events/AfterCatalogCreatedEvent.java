@@ -24,7 +24,7 @@ import org.apache.polaris.core.auth.AuthenticatedPolarisPrincipal;
 import java.util.Optional;
 
 /**
- * Emitted when Polaris intends to create a table.
+ * Emitted when Polaris intends to create a catalog.
  *
  */
 public final class AfterCatalogCreatedEvent extends PolarisEvent {

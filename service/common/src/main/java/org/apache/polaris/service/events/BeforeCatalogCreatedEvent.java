@@ -21,8 +21,6 @@ package org.apache.polaris.service.events;
 
 import org.apache.polaris.core.auth.AuthenticatedPolarisPrincipal;
 
-import java.util.Optional;
-
 /**
  * Emitted when Polaris intends to create a table.
  *
@@ -30,16 +28,16 @@ import java.util.Optional;
 public final class BeforeCatalogCreatedEvent extends PolarisEvent {
     private final String catalogName;
     private final String requestId;
-    private final String actor;
+    private final String user;
     private static final org.apache.polaris.core.entity.PolarisEvent.ResourceType resourceType = org.apache.polaris.core.entity.PolarisEvent.ResourceType.CATALOG;
 
     public BeforeCatalogCreatedEvent(String catalogName, String requestId, AuthenticatedPolarisPrincipal principal) {
         this.catalogName = catalogName;
         this.requestId = requestId;
         if (principal != null) {
-            this.actor = principal.getName();
+            this.user = principal.getName();
         } else {
-            this.actor = null;
+            this.user = null;
         }
     }
 
@@ -47,8 +45,8 @@ public final class BeforeCatalogCreatedEvent extends PolarisEvent {
         return resourceType;
     }
 
-    public String getActor() {
-        return actor;
+    public String getUser() {
+        return user;
     }
 
     public String getRequestId() {
