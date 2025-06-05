@@ -16,21 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.polaris.service.events;
 
+package org.apache.polaris.core.utils;
 
-public final class BeforeRequestRateLimitedEvent extends PolarisEvent {
-    private final String method;
-    private final String absolutePath;
+import java.util.function.Supplier;
 
-    /**
-     * Emitted before the RateLimiterFilter rejects a request due to exceeding the rate limit.
-     *
-     * @param method The request's HTTP method
-     * @param absolutePath The request's absolute path
-     */
-    public BeforeRequestRateLimitedEvent(String method, String absolutePath) {
-        this.method = method;
-        this.absolutePath = absolutePath;
+public class CachedSupplier<T> implements Supplier<T> {
+    private final Supplier<T> delegate;
+    private T value;
+    private boolean initialized = false;
+
+    public CachedSupplier(Supplier<T> delegate) {
+        this.delegate = delegate;
+    }
+
+    @Override
+    public synchronized T get() {
+        if (!initialized) {
+            value = delegate.get();
+            initialized = true;
+        }
+        return value;
     }
 }

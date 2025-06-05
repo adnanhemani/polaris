@@ -16,12 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.polaris.service.events;
 
-import io.smallrye.common.annotation.Identifier;
-import jakarta.enterprise.context.ApplicationScoped;
+import org.apache.iceberg.catalog.TableIdentifier;
 
-/** Event listener that does nothing. */
-@ApplicationScoped
-@Identifier("no-op")
-public class NoOpPolarisEventListener extends PolarisEventListener {}
+/**
+ * Emitted when Polaris intends to create a table.
+ *
+ */
+public final class BeforeTableCreatedEvent extends PolarisEvent {
+    private final TableIdentifier identifier;
+    private final String requestId;
+
+    public BeforeTableCreatedEvent(TableIdentifier tableIdentifier, String requestId) {
+        this.identifier = tableIdentifier;
+        this.requestId = requestId;
+    }
+
+    public TableIdentifier getIdentifier() {
+        return identifier;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+}
