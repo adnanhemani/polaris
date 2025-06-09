@@ -20,22 +20,20 @@ package org.apache.polaris.service.events;
 
 import java.util.UUID;
 
-/**
- * Represents an event emitted by Polaris.
- */
+/** Represents an event emitted by Polaris. */
 public abstract class PolarisEvent {
-    private final String eventId = UUID.randomUUID().toString();
-    private final long timestampMs = System.currentTimeMillis();
+  private final String eventId = UUID.randomUUID().toString();
+  private final long timestampMs = System.currentTimeMillis();
 
-    public static String createRequestId() {
-        return UUID.randomUUID().toString();
-    }
+  public static String createRequestId() {
+    return UUID.randomUUID().toString();
+  }
 
-    public String getEventId() {
-        return eventId;
-    }
+  public String getEventId() {
+    return eventId;
+  }
 
-    public long getTimestampMs() {
-        return timestampMs;
-    }
+  public long getTimestampMs() {
+    return timestampMs;
+  }
 }

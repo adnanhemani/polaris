@@ -20,7 +20,6 @@ package org.apache.polaris.service.events.listeners;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.polaris.core.context.CallContext;
-import org.apache.polaris.core.context.RealmContext;
 import org.apache.polaris.service.events.*;
 
 /**

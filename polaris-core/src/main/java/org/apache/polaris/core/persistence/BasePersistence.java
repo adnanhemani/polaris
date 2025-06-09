@@ -135,6 +135,7 @@ public interface BasePersistence extends PolicyMappingPersistence {
 
   /**
    * Write all events to the events table. This is an append-only operation.
+   *
    * @param events events to persist
    */
   void writeEvents(@Nonnull List<PolarisEvent> events);

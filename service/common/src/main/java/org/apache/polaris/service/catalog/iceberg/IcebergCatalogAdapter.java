@@ -18,6 +18,9 @@
  */
 package org.apache.polaris.service.catalog.iceberg;
 
+import static org.apache.polaris.service.catalog.AccessDelegationMode.VENDED_CREDENTIALS;
+import static org.apache.polaris.service.catalog.validation.IcebergPropertiesValidation.validateIcebergProperties;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -28,6 +31,11 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
 import org.apache.iceberg.MetadataUpdate;
 import org.apache.iceberg.catalog.Namespace;
 import org.apache.iceberg.catalog.TableIdentifier;
@@ -69,8 +77,6 @@ import org.apache.polaris.service.catalog.api.IcebergRestConfigurationApiService
 import org.apache.polaris.service.catalog.common.CatalogAdapter;
 import org.apache.polaris.service.config.ReservedProperties;
 import org.apache.polaris.service.context.catalog.CallContextCatalogFactory;
-import org.apache.polaris.service.events.BeforeTableCreatedEvent;
-import org.apache.polaris.service.events.PolarisEvent;
 import org.apache.polaris.service.events.listeners.PolarisEventListener;
 import org.apache.polaris.service.http.IcebergHttpUtil;
 import org.apache.polaris.service.http.IfNoneMatch;
@@ -79,16 +85,6 @@ import org.apache.polaris.service.types.CommitViewRequest;
 import org.apache.polaris.service.types.NotificationRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.Function;
-
-import static org.apache.polaris.service.catalog.AccessDelegationMode.VENDED_CREDENTIALS;
-import static org.apache.polaris.service.catalog.validation.IcebergPropertiesValidation.validateIcebergProperties;
 
 /**
  * An adapter between generated service types like `IcebergRestCatalogApiService` and
@@ -348,10 +344,6 @@ public class IcebergCatalogAdapter
       String accessDelegationMode,
       RealmContext realmContext,
       SecurityContext securityContext) {
-    Namespace ns = decodeNamespace(namespace);
-    TableIdentifier identifier = TableIdentifier.of(namespace, createTableRequest.name());
-    String requestId = PolarisEvent.createRequestId();
-    polarisEventListener.onBeforeTableCreated(new BeforeTableCreatedEvent(identifier, requestId));
     validateIcebergProperties(callContext, createTableRequest.properties());
     EnumSet<AccessDelegationMode> delegationModes =
         parseAccessDelegationModes(accessDelegationMode);
@@ -359,7 +351,7 @@ public class IcebergCatalogAdapter
         securityContext,
         prefix,
         catalog -> {
-          createTableRequest.properties().put("requestId", requestId);
+          Namespace ns = decodeNamespace(namespace);
           if (createTableRequest.stageCreate()) {
             if (delegationModes.isEmpty()) {
               return Response.ok(catalog.createTableStaged(ns, createTableRequest)).build();

@@ -24,8 +24,6 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
-
 import org.apache.iceberg.catalog.Namespace;
 import org.apache.iceberg.catalog.TableIdentifier;
 import org.apache.iceberg.exceptions.NotAuthorizedException;
@@ -152,14 +150,23 @@ public class PolarisServiceImpl
   public Response createCatalog(
       CreateCatalogRequest request, RealmContext realmContext, SecurityContext securityContext) {
     String requestId = PolarisEvent.createRequestId();
-    polarisEventListener.onBeforeCatalogCreated(new BeforeCatalogCreatedEvent(request.getCatalog().getName(), requestId, (AuthenticatedPolarisPrincipal) securityContext.getUserPrincipal()));
+    polarisEventListener.onBeforeCatalogCreated(
+        new BeforeCatalogCreatedEvent(
+            request.getCatalog().getName(),
+            requestId,
+            (AuthenticatedPolarisPrincipal) securityContext.getUserPrincipal()));
     PolarisAdminService adminService = newAdminService(realmContext, securityContext);
     Catalog catalog = request.getCatalog();
     validateStorageConfig(catalog.getStorageConfigInfo());
     validateConnectionConfigInfo(catalog);
     Catalog newCatalog = new CatalogEntity(adminService.createCatalog(request)).asCatalog();
     LOGGER.info("Created new catalog {}", newCatalog);
-    polarisEventListener.onAfterCatalogCreated(new AfterCatalogCreatedEvent(newCatalog.getName(), requestId, (AuthenticatedPolarisPrincipal) securityContext.getUserPrincipal()), callContext);
+    polarisEventListener.onAfterCatalogCreated(
+        new AfterCatalogCreatedEvent(
+            newCatalog.getName(),
+            requestId,
+            (AuthenticatedPolarisPrincipal) securityContext.getUserPrincipal()),
+        callContext);
     return Response.status(Response.Status.CREATED).build();
   }
 

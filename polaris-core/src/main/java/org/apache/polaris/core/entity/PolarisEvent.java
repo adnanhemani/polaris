@@ -24,131 +24,132 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.Serializable;
 import java.util.Map;
 
 public class PolarisEvent implements Serializable {
-    public static final String EMPTY_MAP_STRING = "{}";
+  public static final String EMPTY_MAP_STRING = "{}";
 
-    // to serialize/deserialize properties
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+  // to serialize/deserialize properties
+  private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    // catalog id
-    private String catalogId;
+  // catalog id
+  private String catalogId;
 
-    // event id
-    private String id;
+  // event id
+  private String id;
 
-    // id of the request that generated this event
-    private String requestId;
+  // id of the request that generated this event
+  private String requestId;
 
-    // event type that was fired
-    private String eventType;
+  // event type that was fired
+  private String eventType;
 
-    // timestamp in epoch milliseconds of when this event was emitted
-    private long timestampMs;
+  // timestamp in epoch milliseconds of when this event was emitted
+  private long timestampMs;
 
-    // polaris principal who took this action
-    private String principalName;
+  // polaris principal who took this action
+  private String principalName;
 
-    // Enum that states the type of resource was being operated on
-    private ResourceType resourceType;
+  // Enum that states the type of resource was being operated on
+  private ResourceType resourceType;
 
-    // Which resource was operated on
-    private String resourceIdentifier;
+  // Which resource was operated on
+  private String resourceIdentifier;
 
-    // Additional parameters that were not earlier recorded
-    private String additionalParameters;
+  // Additional parameters that were not earlier recorded
+  private String additionalParameters;
 
-    public String getCatalogId() {
-        return catalogId;
+  public String getCatalogId() {
+    return catalogId;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public String getRequestId() {
+    return requestId;
+  }
+
+  public String getEventType() {
+    return eventType;
+  }
+
+  public long getTimestampMs() {
+    return timestampMs;
+  }
+
+  public String getPrincipalName() {
+    return principalName;
+  }
+
+  public ResourceType getResourceType() {
+    return resourceType;
+  }
+
+  public String getResourceIdentifier() {
+    return resourceIdentifier;
+  }
+
+  public String getAdditionalParameters() {
+    return additionalParameters != null ? additionalParameters : EMPTY_MAP_STRING;
+  }
+
+  public Map<String, String> getAdditionalParametersAsMap() {
+    try {
+      return additionalParameters != null
+          ? MAPPER.readValue(this.additionalParameters, Map.class)
+          : Map.of();
+    } catch (JsonProcessingException ex) {
+      throw new IllegalStateException(
+          String.format(
+              "Failed to deserialize json. additionalParameters %s", this.additionalParameters),
+          ex);
     }
+  }
 
-    public String getId() {
-        return id;
+  @JsonCreator
+  public PolarisEvent(
+      @JsonProperty("catalog_id") String catalogId,
+      @JsonProperty("id") String id,
+      @JsonProperty("request_id") String requestId,
+      @JsonProperty("event_type") String eventType,
+      @JsonProperty("timestamp_ms") long timestampMs,
+      @JsonProperty("actor") String actor,
+      @JsonProperty("resource_type") ResourceType resourceType,
+      @JsonProperty("resource_identifier") String resourceIdentifier) {
+    this.catalogId = catalogId;
+    this.id = id;
+    this.requestId = requestId;
+    this.eventType = eventType;
+    this.timestampMs = timestampMs;
+    this.principalName = actor;
+    this.resourceType = resourceType;
+    this.resourceIdentifier = resourceIdentifier;
+  }
+
+  // Needed for Kryo Deserialization
+  public PolarisEvent() {}
+
+  @JsonIgnore
+  public void setAdditionalParameters(Map<String, String> properties) {
+    try {
+      this.additionalParameters = properties == null ? null : MAPPER.writeValueAsString(properties);
+    } catch (JsonProcessingException ex) {
+      throw new IllegalStateException(
+          String.format("Failed to serialize json. properties %s", properties), ex);
     }
+  }
 
-    public String getRequestId() {
-        return requestId;
-    }
+  public void setAdditionalParameters(String additionalParameters) {
+    this.additionalParameters = additionalParameters;
+  }
 
-    public String getEventType() {
-        return eventType;
-    }
-
-    public long getTimestampMs() {
-        return timestampMs;
-    }
-
-    public String getPrincipalName() {
-        return principalName;
-    }
-
-    public ResourceType getResourceType() {
-        return resourceType;
-    }
-
-    public String getResourceIdentifier() {
-        return resourceIdentifier;
-    }
-
-    public String getAdditionalParameters() {
-        return additionalParameters != null ? additionalParameters : EMPTY_MAP_STRING;
-    }
-
-    public Map<String, String> getAdditionalParametersAsMap() {
-        try {
-            return additionalParameters != null ? MAPPER.readValue(this.additionalParameters, Map.class) : Map.of();
-        } catch (JsonProcessingException ex) {
-            throw new IllegalStateException(
-                    String.format("Failed to deserialize json. additionalParameters %s", this.additionalParameters), ex);
-        }
-    }
-
-    @JsonCreator
-    public PolarisEvent(
-            @JsonProperty("catalog_id") String catalogId,
-            @JsonProperty("id") String id,
-            @JsonProperty("request_id") String requestId,
-            @JsonProperty("event_type") String eventType,
-            @JsonProperty("timestamp_ms") long timestampMs,
-            @JsonProperty("actor") String actor,
-            @JsonProperty("resource_type") ResourceType resourceType,
-            @JsonProperty("resource_identifier") String resourceIdentifier) {
-        this.catalogId = catalogId;
-        this.id = id;
-        this.requestId = requestId;
-        this.eventType = eventType;
-        this.timestampMs = timestampMs;
-        this.principalName = actor;
-        this.resourceType = resourceType;
-        this.resourceIdentifier = resourceIdentifier;
-    }
-
-    // Needed for Kryo Deserialization
-    public PolarisEvent() {
-
-    }
-
-    @JsonIgnore
-    public void setAdditionalParameters(Map<String, String> properties) {
-        try {
-            this.additionalParameters = properties == null ? null : MAPPER.writeValueAsString(properties);
-        } catch (JsonProcessingException ex) {
-            throw new IllegalStateException(
-                    String.format("Failed to serialize json. properties %s", properties), ex);
-        }
-    }
-
-    public void setAdditionalParameters(String additionalParameters) {
-        this.additionalParameters = additionalParameters;
-    }
-
-    public enum ResourceType {
-        CATALOG,
-        NAMESPACE,
-        TABLE,
-        VIEW
-    }
+  public enum ResourceType {
+    CATALOG,
+    NAMESPACE,
+    TABLE,
+    VIEW
+  }
 }

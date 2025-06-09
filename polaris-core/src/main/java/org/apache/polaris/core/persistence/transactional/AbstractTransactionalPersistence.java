@@ -264,7 +264,8 @@ public abstract class AbstractTransactionalPersistence implements TransactionalP
 
   @Override
   public void writeEvents(@Nonnull List<PolarisEvent> events) {
-    throw new UnsupportedOperationException("Not implemented for EclipseLink, as it is deprecated.");
+    throw new UnsupportedOperationException(
+        "Not implemented for EclipseLink, as it is deprecated.");
   }
 
   /** {@inheritDoc} */

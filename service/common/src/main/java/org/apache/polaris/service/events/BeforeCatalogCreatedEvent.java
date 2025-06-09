@@ -21,39 +21,38 @@ package org.apache.polaris.service.events;
 
 import org.apache.polaris.core.auth.AuthenticatedPolarisPrincipal;
 
-/**
- * Emitted when Polaris intends to create a table.
- *
- */
+/** Emitted when Polaris intends to create a table. */
 public final class BeforeCatalogCreatedEvent extends PolarisEvent {
-    private final String catalogName;
-    private final String requestId;
-    private final String user;
-    private static final org.apache.polaris.core.entity.PolarisEvent.ResourceType resourceType = org.apache.polaris.core.entity.PolarisEvent.ResourceType.CATALOG;
+  private final String catalogName;
+  private final String requestId;
+  private final String user;
+  private static final org.apache.polaris.core.entity.PolarisEvent.ResourceType resourceType =
+      org.apache.polaris.core.entity.PolarisEvent.ResourceType.CATALOG;
 
-    public BeforeCatalogCreatedEvent(String catalogName, String requestId, AuthenticatedPolarisPrincipal principal) {
-        this.catalogName = catalogName;
-        this.requestId = requestId;
-        if (principal != null) {
-            this.user = principal.getName();
-        } else {
-            this.user = null;
-        }
+  public BeforeCatalogCreatedEvent(
+      String catalogName, String requestId, AuthenticatedPolarisPrincipal principal) {
+    this.catalogName = catalogName;
+    this.requestId = requestId;
+    if (principal != null) {
+      this.user = principal.getName();
+    } else {
+      this.user = null;
     }
+  }
 
-    public org.apache.polaris.core.entity.PolarisEvent.ResourceType getResourceType() {
-        return resourceType;
-    }
+  public org.apache.polaris.core.entity.PolarisEvent.ResourceType getResourceType() {
+    return resourceType;
+  }
 
-    public String getUser() {
-        return user;
-    }
+  public String getUser() {
+    return user;
+  }
 
-    public String getRequestId() {
-        return requestId;
-    }
+  public String getRequestId() {
+    return requestId;
+  }
 
-    public String getCatalogName() {
-        return catalogName;
-    }
+  public String getCatalogName() {
+    return catalogName;
+  }
 }

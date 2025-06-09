@@ -21,41 +21,38 @@ package org.apache.polaris.service.events;
 
 import org.apache.polaris.core.auth.AuthenticatedPolarisPrincipal;
 
-import java.util.Optional;
-
-/**
- * Emitted when Polaris intends to create a catalog.
- *
- */
+/** Emitted when Polaris intends to create a catalog. */
 public final class AfterCatalogCreatedEvent extends PolarisEvent {
-    private final String catalogName;
-    private final String requestId;
-    private final String user;
-    private static final org.apache.polaris.core.entity.PolarisEvent.ResourceType resourceType = org.apache.polaris.core.entity.PolarisEvent.ResourceType.CATALOG;
+  private final String catalogName;
+  private final String requestId;
+  private final String user;
+  private static final org.apache.polaris.core.entity.PolarisEvent.ResourceType resourceType =
+      org.apache.polaris.core.entity.PolarisEvent.ResourceType.CATALOG;
 
-    public AfterCatalogCreatedEvent(String catalogName, String requestId, AuthenticatedPolarisPrincipal principal) {
-        this.catalogName = catalogName;
-        this.requestId = requestId;
-        if (principal != null) {
-            this.user = principal.getName();
-        } else {
-            this.user = null;
-        }
+  public AfterCatalogCreatedEvent(
+      String catalogName, String requestId, AuthenticatedPolarisPrincipal principal) {
+    this.catalogName = catalogName;
+    this.requestId = requestId;
+    if (principal != null) {
+      this.user = principal.getName();
+    } else {
+      this.user = null;
     }
+  }
 
-    public org.apache.polaris.core.entity.PolarisEvent.ResourceType getResourceType() {
-        return resourceType;
-    }
+  public org.apache.polaris.core.entity.PolarisEvent.ResourceType getResourceType() {
+    return resourceType;
+  }
 
-    public String getUser() {
-        return user;
-    }
+  public String getUser() {
+    return user;
+  }
 
-    public String getRequestId() {
-        return requestId;
-    }
+  public String getRequestId() {
+    return requestId;
+  }
 
-    public String getCatalogName() {
-        return catalogName;
-    }
+  public String getCatalogName() {
+    return catalogName;
+  }
 }

@@ -23,10 +23,6 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoException;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.KryoBufferUnderflowException;
-import org.apache.polaris.core.entity.PolarisEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,60 +32,68 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import org.apache.polaris.core.entity.PolarisEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class FileFlushTask implements Runnable {
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileFlushTask.class);
-    private final Kryo kryo = new Kryo();
+  private static final Logger LOGGER = LoggerFactory.getLogger(FileFlushTask.class);
+  private final Kryo kryo = new Kryo();
 
-    private final String file;
-    private final String realmId;
-    private final Consumer<String> cleanupFutures;
-    private final BiConsumer<String, List<PolarisEvent>> eventWriter;
+  private final String file;
+  private final String realmId;
+  private final Consumer<String> cleanupFutures;
+  private final BiConsumer<String, List<PolarisEvent>> eventWriter;
 
-    public FileFlushTask(String file, String realmId, Consumer<String> cleanupFutures, BiConsumer<String, List<PolarisEvent>> eventWriter) {
-        this.file = file;
-        this.realmId = realmId;
-        this.cleanupFutures = cleanupFutures;
-        this.eventWriter = eventWriter;
-        kryo.register(PolarisEvent.class);
-        kryo.register(PolarisEvent.ResourceType.class);
-    }
+  public FileFlushTask(
+      String file,
+      String realmId,
+      Consumer<String> cleanupFutures,
+      BiConsumer<String, List<PolarisEvent>> eventWriter) {
+    this.file = file;
+    this.realmId = realmId;
+    this.cleanupFutures = cleanupFutures;
+    this.eventWriter = eventWriter;
+    kryo.register(PolarisEvent.class);
+    kryo.register(PolarisEvent.ResourceType.class);
+  }
 
-    @Override
-    public void run() {
-        LOGGER.trace("Starting file flush task #{}", file);
-        List<PolarisEvent> polarisEvents = new ArrayList<>();
-        try (Input in = new Input(new FileInputStream(this.file))) {
-            while (true) {
-                PolarisEvent polarisEvent = kryo.readObject(in, PolarisEvent.class);
-                polarisEvents.add(polarisEvent);
-            }
-        } catch (KryoException e) {
-            // Possibly end of file reached
-            if (!(e.getCause() instanceof EOFException) && !(e instanceof KryoBufferUnderflowException)) {
-                LOGGER.error("Failed to read events from file {}", file, e);
-                this.cleanupFutures.accept(this.file);
-                return;
-            }
-        } catch (IOException e) {
-            if (e.getCause() instanceof FileNotFoundException) {
-                LOGGER.trace("Skipping file {}, as it may no longer be present", file);
-            }
-        }
-
-        try {
-            if (!polarisEvents.isEmpty()) {
-                // Write all events back to the metastore
-                this.eventWriter.accept(this.realmId, polarisEvents);
-            }
-        } catch (RuntimeException e) {
-            LOGGER.error("Failed to write events to meta store. Leaving file for future cleanup tasks.", e);
-            return;
-        }
-
-        // Delete file
-        File file = new File(this.file);
-        file.delete();
+  @Override
+  public void run() {
+    LOGGER.trace("Starting file flush task #{}", file);
+    List<PolarisEvent> polarisEvents = new ArrayList<>();
+    try (Input in = new Input(new FileInputStream(this.file))) {
+      while (true) {
+        PolarisEvent polarisEvent = kryo.readObject(in, PolarisEvent.class);
+        polarisEvents.add(polarisEvent);
+      }
+    } catch (KryoException e) {
+      // Possibly end of file reached
+      if (!(e.getCause() instanceof EOFException) && !(e instanceof KryoBufferUnderflowException)) {
+        LOGGER.error("Failed to read events from file {}", file, e);
         this.cleanupFutures.accept(this.file);
+        return;
+      }
+    } catch (IOException e) {
+      if (e.getCause() instanceof FileNotFoundException) {
+        LOGGER.trace("Skipping file {}, as it may no longer be present", file);
+      }
     }
+
+    try {
+      if (!polarisEvents.isEmpty()) {
+        // Write all events back to the metastore
+        this.eventWriter.accept(this.realmId, polarisEvents);
+      }
+    } catch (RuntimeException e) {
+      LOGGER.error(
+          "Failed to write events to meta store. Leaving file for future cleanup tasks.", e);
+      return;
+    }
+
+    // Delete file
+    File file = new File(this.file);
+    file.delete();
+    this.cleanupFutures.accept(this.file);
+  }
 }

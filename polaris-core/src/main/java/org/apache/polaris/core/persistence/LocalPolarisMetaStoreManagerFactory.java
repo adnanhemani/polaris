@@ -100,7 +100,7 @@ public abstract class LocalPolarisMetaStoreManagerFactory<StoreType>
     final StoreType backingStore = createBackingStore(diagnostics);
     sessionSupplierMap.put(
         realmContext.getRealmIdentifier(),
-            () -> createMetaStoreSession(backingStore, realmContext, rootCredentialsSet, diagnostics));
+        () -> createMetaStoreSession(backingStore, realmContext, rootCredentialsSet, diagnostics));
 
     PolarisMetaStoreManager metaStoreManager = createNewMetaStoreManager();
     metaStoreManagerMap.put(realmContext.getRealmIdentifier(), metaStoreManager);
