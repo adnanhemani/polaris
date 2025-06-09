@@ -96,6 +96,7 @@ public abstract class PolarisPersistenceEventListener extends PolarisEventListen
     @Override
     public void onAfterTableCreated(AfterTableCreatedEvent event, CallContext callCtx) {
         org.apache.polaris.core.entity.PolarisEvent polarisEvent = new org.apache.polaris.core.entity.PolarisEvent(
+                event.getCatalogName(),
                 event.getEventId(),
                 event.getRequestId(),
                 event.getClass().getSimpleName(),
@@ -112,6 +113,7 @@ public abstract class PolarisPersistenceEventListener extends PolarisEventListen
     @Override
     public void onAfterCatalogCreated(AfterCatalogCreatedEvent event, CallContext callCtx) {
         org.apache.polaris.core.entity.PolarisEvent polarisEvent = new PolarisEvent(
+                event.getCatalogName(),
                 event.getEventId(),
                 event.getRequestId(),
                 event.getClass().getSimpleName(),

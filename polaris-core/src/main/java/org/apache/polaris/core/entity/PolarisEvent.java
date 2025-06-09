@@ -34,6 +34,9 @@ public class PolarisEvent implements Serializable {
     // to serialize/deserialize properties
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
+    // catalog id
+    private String catalogId;
+
     // event id
     private String id;
 
@@ -57,6 +60,10 @@ public class PolarisEvent implements Serializable {
 
     // Additional parameters that were not earlier recorded
     private String additionalParameters;
+
+    public String getCatalogId() {
+        return catalogId;
+    }
 
     public String getId() {
         return id;
@@ -101,6 +108,7 @@ public class PolarisEvent implements Serializable {
 
     @JsonCreator
     public PolarisEvent(
+            @JsonProperty("catalog_id") String catalogId,
             @JsonProperty("id") String id,
             @JsonProperty("request_id") String requestId,
             @JsonProperty("event_type") String eventType,
@@ -108,6 +116,7 @@ public class PolarisEvent implements Serializable {
             @JsonProperty("actor") String actor,
             @JsonProperty("resource_type") ResourceType resourceType,
             @JsonProperty("resource_identifier") String resourceIdentifier) {
+        this.catalogId = catalogId;
         this.id = id;
         this.requestId = requestId;
         this.eventType = eventType;

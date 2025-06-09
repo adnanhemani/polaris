@@ -107,6 +107,7 @@ CREATE INDEX IF NOT EXISTS idx_policy_mapping_record ON policy_mapping_record (r
 
 CREATE TABLE IF NOT EXISTS events (
     realm_id TEXT NOT NULL,
+    catalog_id TEXT NOT NULL,
     event_id TEXT NOT NULL,
     request_id TEXT NOT NULL,
     event_type TEXT NOT NULL,

@@ -23,20 +23,20 @@ import org.apache.iceberg.TableMetadata;
 import org.apache.iceberg.catalog.TableIdentifier;
 import org.apache.polaris.core.auth.AuthenticatedPolarisPrincipal;
 
-import java.util.Optional;
-
 /**
  * Emitted when Polaris intends to create a table.
  *
  */
 public final class AfterTableCreatedEvent extends PolarisEvent {
+    private final String catalogName;
     private final TableIdentifier tableIdentifier;
     private final TableMetadata tableMetadata;
     private final String requestId;
     private final String user;
     private static final org.apache.polaris.core.entity.PolarisEvent.ResourceType resourceType = org.apache.polaris.core.entity.PolarisEvent.ResourceType.TABLE;
 
-    public AfterTableCreatedEvent(TableIdentifier identifier, TableMetadata metadata, String requestId, AuthenticatedPolarisPrincipal principal) {
+    public AfterTableCreatedEvent(String catalogName, TableMetadata metadata, String requestId, AuthenticatedPolarisPrincipal principal, TableIdentifier identifier) {
+        this.catalogName = catalogName;
         this.tableIdentifier = identifier;
         this.tableMetadata = metadata;
         this.requestId = requestId;
@@ -62,6 +62,10 @@ public final class AfterTableCreatedEvent extends PolarisEvent {
 
     public TableIdentifier getTableIdentifier() {
         return tableIdentifier;
+    }
+
+    public String getCatalogName() {
+        return catalogName;
     }
 
     public org.apache.polaris.core.entity.PolarisEvent.ResourceType getResourceType() {

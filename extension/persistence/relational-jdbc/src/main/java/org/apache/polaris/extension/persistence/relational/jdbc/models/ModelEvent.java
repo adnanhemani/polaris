@@ -27,6 +27,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ModelEvent implements Converter<PolarisEvent> {
+    // catalog id
+    private String catalogId;
+
     // event id
     private String eventId;
 
@@ -50,6 +53,10 @@ public class ModelEvent implements Converter<PolarisEvent> {
 
     // Additional parameters that were not earlier recorded
     private String additionalParameters;
+
+    public String getCatalogId() {
+        return catalogId;
+    }
 
     public String getEventId() {
         return eventId;
@@ -91,6 +98,7 @@ public class ModelEvent implements Converter<PolarisEvent> {
     public PolarisEvent fromResultSet(ResultSet rs) throws SQLException {
         var modelEvent =
                 ModelEvent.builder()
+                        .catalogId(rs.getString("catalog_id"))
                         .eventId(rs.getString("event_id"))
                         .requestId(rs.getString("request_id"))
                         .eventType(rs.getString("event_type"))
@@ -106,6 +114,7 @@ public class ModelEvent implements Converter<PolarisEvent> {
     @Override
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
+        map.put("catalog_id", this.catalogId);
         map.put("event_id", this.eventId);
         map.put("request_id", this.requestId);
         map.put("event_type", this.eventType);
@@ -122,6 +131,11 @@ public class ModelEvent implements Converter<PolarisEvent> {
 
         private Builder() {
             event = new ModelEvent();
+        }
+
+        public ModelEvent.Builder catalogId(String catalogId) {
+            event.catalogId = catalogId;
+            return this;
         }
 
         public ModelEvent.Builder eventId(String id) {
@@ -173,6 +187,7 @@ public class ModelEvent implements Converter<PolarisEvent> {
         if (event == null) return null;
 
         ModelEvent.Builder modelEventBuilder = ModelEvent.builder()
+                .catalogId(event.getCatalogId())
                 .eventId(event.getId())
                 .requestId(event.getRequestId())
                 .eventType(event.getEventType())
@@ -188,6 +203,7 @@ public class ModelEvent implements Converter<PolarisEvent> {
         if (model == null) return null;
 
         PolarisEvent polarisEvent = new PolarisEvent(
+                model.getCatalogId(),
                 model.getEventId(),
                 model.getRequestId(),
                 model.getEventType(),
