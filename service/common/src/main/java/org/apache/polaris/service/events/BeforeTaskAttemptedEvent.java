@@ -39,4 +39,16 @@ public final class BeforeTaskAttemptedEvent extends PolarisEvent {
         this.callContext = callContext;
         this.attempt = attempt;
     }
+
+    public long getTaskEntityId() {
+        return taskEntityId;
+    }
+
+    public CallContext getCallContext() {
+        return callContext;
+    }
+
+    public int getAttempt() {
+        return attempt;
+    }
 }

@@ -81,9 +81,9 @@ public class TaskExecutorImplTest {
           public boolean handleTask(TaskEntity task, CallContext callContext) {
             var beforeTaskAttemptedEvent =
                 testPolarisEventListener.getLatest(BeforeTaskAttemptedEvent.class);
-            Assertions.assertEquals(taskEntity.getId(), beforeTaskAttemptedEvent.taskEntityId());
-            Assertions.assertEquals(callContext, beforeTaskAttemptedEvent.callContext());
-            Assertions.assertEquals(attempt, beforeTaskAttemptedEvent.attempt());
+            Assertions.assertEquals(taskEntity.getId(), beforeTaskAttemptedEvent.getTaskEntityId());
+            Assertions.assertEquals(callContext, beforeTaskAttemptedEvent.getCallContext());
+            Assertions.assertEquals(attempt, beforeTaskAttemptedEvent.getAttempt());
             return true;
           }
         });
@@ -91,9 +91,9 @@ public class TaskExecutorImplTest {
     executor.handleTask(taskEntity.getId(), callContext, attempt);
 
     var afterAttemptTaskEvent = testPolarisEventListener.getLatest(AfterTaskAttemptedEvent.class);
-    Assertions.assertEquals(taskEntity.getId(), afterAttemptTaskEvent.taskEntityId());
-    Assertions.assertEquals(callContext, afterAttemptTaskEvent.callContext());
-    Assertions.assertEquals(attempt, afterAttemptTaskEvent.attempt());
-    Assertions.assertTrue(afterAttemptTaskEvent.success());
+    Assertions.assertEquals(taskEntity.getId(), afterAttemptTaskEvent.getTaskEntityId());
+    Assertions.assertEquals(callContext, afterAttemptTaskEvent.getCallContext());
+    Assertions.assertEquals(attempt, afterAttemptTaskEvent.getAttempt());
+    Assertions.assertTrue(afterAttemptTaskEvent.isSuccess());
   }
 }

@@ -116,6 +116,6 @@ CREATE TABLE IF NOT EXISTS events (
     principal_name TEXT,
     resource_type TEXT NOT NULL,
     resource_identifier TEXT NOT NULL,
-    additional_parameters JSONB NOT NULL DEFAULT '{}'::JSONB,
+    additional_parameters TEXT NOT NULL DEFAULT '{}',
     PRIMARY KEY (event_id)
 );

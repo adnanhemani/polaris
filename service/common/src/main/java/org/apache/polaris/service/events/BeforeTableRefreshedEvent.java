@@ -33,4 +33,8 @@ public final class BeforeTableRefreshedEvent extends PolarisEvent {
     public BeforeTableRefreshedEvent(TableIdentifier tableIdentifier) {
         this.tableIdentifier = tableIdentifier;
     }
+
+    public TableIdentifier getTableIdentifier() {
+        return tableIdentifier;
+    }
 }

@@ -41,4 +41,16 @@ public final class BeforeTableCommitedEvent extends PolarisEvent {
         this.base = base;
         this.metadata = metadata;
     }
+
+    public TableIdentifier getTableIdentifier() {
+        return tableIdentifier;
+    }
+
+    public TableMetadata getBase() {
+        return base;
+    }
+
+    public TableMetadata getMetadata() {
+        return metadata;
+    }
 }

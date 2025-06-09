@@ -33,4 +33,8 @@ public final class AfterViewRefreshedEvent extends PolarisEvent {
     public AfterViewRefreshedEvent(TableIdentifier viewIdentifier) {
         this.viewIdentifier = viewIdentifier;
     }
+
+    public TableIdentifier getViewIdentifier() {
+        return viewIdentifier;
+    }
 }

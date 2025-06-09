@@ -273,7 +273,8 @@ public record TestServices(
                   userSecretsManagerFactory,
                   authorizer,
                   callContext,
-                  reservedProperties));
+                  reservedProperties,
+                  polarisEventListener));
 
       return new TestServices(
           catalogsApi,

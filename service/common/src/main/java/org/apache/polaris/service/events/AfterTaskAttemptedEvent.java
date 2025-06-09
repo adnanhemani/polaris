@@ -35,12 +35,28 @@ public final class AfterTaskAttemptedEvent extends PolarisEvent {
      * @param callContext The CallContext the task is being executed under.
      * @param attempt The attempt number. Each retry of the task will have its own attempt number. The
      *     initial (non-retried) attempt starts counting from 1.
-     * @param success Whether or not the attempt succeeded.
+     * @param success Whether the attempt succeeded.
      */
     public AfterTaskAttemptedEvent(long taskEntityId, CallContext callContext, int attempt, boolean success) {
         this.taskEntityId = taskEntityId;
         this.callContext = callContext;
         this.attempt = attempt;
         this.success = success;
+    }
+
+    public long getTaskEntityId() {
+        return taskEntityId;
+    }
+
+    public CallContext getCallContext() {
+        return callContext;
+    }
+
+    public int getAttempt() {
+        return attempt;
+    }
+
+    public boolean isSuccess() {
+        return success;
     }
 }

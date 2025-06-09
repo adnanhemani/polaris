@@ -41,4 +41,16 @@ public final class BeforeViewCommitedEvent extends PolarisEvent {
         this.base = base;
         this.metadata = metadata;
     }
+
+    public TableIdentifier getIdentifier() {
+        return identifier;
+    }
+
+    public ViewMetadata getBase() {
+        return base;
+    }
+
+    public ViewMetadata getMetadata() {
+        return metadata;
+    }
 }

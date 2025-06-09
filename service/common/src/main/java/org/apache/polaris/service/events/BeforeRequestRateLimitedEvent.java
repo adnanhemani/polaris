@@ -33,4 +33,12 @@ public final class BeforeRequestRateLimitedEvent extends PolarisEvent {
         this.method = method;
         this.absolutePath = absolutePath;
     }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public String getAbsolutePath() {
+        return absolutePath;
+    }
 }
