@@ -74,8 +74,8 @@ exit 0
    You may not see Spark's prompt immediately, type ENTER to see it. A few commands that you can try:
 
     ```sql
-    CREATE NAMESPACE polaris.ns1;
-    USE polaris.ns1;
+    CREATE NAMESPACE quickstart_catalog.ns1;
+    USE quickstart_catalog.ns1;
     CREATE TABLE table1 (id int, name string);
     INSERT INTO table1 VALUES (1, 'a');
     SELECT * FROM table1;
