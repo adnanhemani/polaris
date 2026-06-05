@@ -43,7 +43,14 @@ Start the Polaris server:
 bin/server
 ```
 
-The server will start and listen on http://localhost:8181 (main REST APIs) and http://localhost:8182 (management interface, for health checks and metrics). 
+On first run, root credentials (client ID and secret) are printed to stdout. Alternatively, you can set them explicitly before starting the server:
+
+```bash
+export POLARIS_BOOTSTRAP_CREDENTIALS=POLARIS,root,s3cr3t
+bin/server
+```
+
+The server will start and listen on http://localhost:8181 (main REST APIs) and http://localhost:8182 (management interface, for health checks and metrics).
 
 Health and metrics endpoints are available under http://localhost:8182/q/health and http://localhost:8182/q/metrics respectively.
 
@@ -52,3 +59,13 @@ You can verify the server is running by checking the health endpoint:
 ```bash
 curl http://localhost:8182/q/health
 ```
+
+## Installing the CLI
+
+Install the Polaris CLI from PyPI:
+
+```bash
+pip install apache-polaris
+```
+
+The `polaris` command will then be available in your shell. See [Using Polaris]({{% ref "using-polaris" %}}) for usage examples.

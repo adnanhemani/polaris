@@ -44,7 +44,7 @@ Additionally, if Polaris is running somewhere other than `localhost:8181`, you c
 
 ### Creating a Principal and Assigning it Privileges
 
-With a catalog created, we can create a [principal]({{% relref "../../entities#principal" %}}) that has access to manage that catalog. For details on how to configure the Polaris CLI, see [the section above](#defining-a-catalog) or refer to the [docs]({{% relref "../../command-line-interface" %}}).
+With a catalog created, we can create a [principal]({{% relref "../../entities#principal" %}}) that has access to manage that catalog. For details on how to configure the Polaris CLI, see the [Creating a Catalog]({{% ref "../creating-a-catalog" %}}) page or refer to the [docs]({{% relref "../../command-line-interface" %}}).
 
 ```shell
 ./polaris \
@@ -160,6 +160,8 @@ Similar to the CLI commands above, this configures Spark to use the Polaris runn
 Finally, note that we include the `iceberg-aws-bundle` package here. If your table is using a different filesystem, be sure to include the appropriate dependency.
 
 #### Using Spark SQL from a Docker container
+
+The Docker Spark configuration uses `quickstart_catalog` as the Spark catalog name, matching the sample commands below.
 
 Refresh the Docker container with the user's credentials:
 ```shell
