@@ -37,7 +37,7 @@ export CLIENT_ID=YOUR_CLIENT_ID
 export CLIENT_SECRET=YOUR_CLIENT_SECRET
 ```
 
-Refer to the [Creating a Catalog]({{% ref "../creating-a-catalog" %}}) page for instructions on defining a
+Refer to the [Creating a Catalog]({{% relref "../creating-a-catalog" %}}) page for instructions on defining a
 catalog for your specific storage type. The following examples assume the catalog's name is `quickstart_catalog`.
 
 In Polaris, the [catalog]({{% relref "../../entities#catalog" %}}) is the top-level entity that objects like [tables]({{% relref "../../entities#table" %}}) and [views]({{% relref "../../entities#view" %}}) are organized under.
@@ -50,7 +50,7 @@ Additionally, if Polaris is running somewhere other than `localhost:8181`, you c
 
 ### Creating a Principal and Assigning it Privileges
 
-With a catalog created, we can create a [principal]({{% relref "../../entities#principal" %}}) that has access to manage that catalog. For details on how to configure the Polaris CLI, see the [Creating a Catalog]({{% ref "../creating-a-catalog" %}}) page or refer to the [docs]({{% relref "../../command-line-interface" %}}).
+With a catalog created, we can create a [principal]({{% relref "../../entities#principal" %}}) that has access to manage that catalog. For details on how to configure the Polaris CLI, see the [Creating a Catalog]({{% relref "../creating-a-catalog" %}}) page or refer to the [docs]({{% relref "../../command-line-interface" %}}).
 
 ```shell
 polaris \
