@@ -150,15 +150,15 @@ _Note: the credentials provided here are those for our principal, not the root c
 bin/spark-sql \
 --packages org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.10.0,org.apache.iceberg:iceberg-aws-bundle:1.10.0 \
 --conf spark.sql.extensions=org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions \
---conf spark.sql.catalog.quickstart_catalog.warehouse=quickstart_catalog \
---conf spark.sql.catalog.quickstart_catalog.header.X-Iceberg-Access-Delegation=vended-credentials \
---conf spark.sql.catalog.quickstart_catalog=org.apache.iceberg.spark.SparkCatalog \
---conf spark.sql.catalog.quickstart_catalog.catalog-impl=org.apache.iceberg.rest.RESTCatalog \
---conf spark.sql.catalog.quickstart_catalog.uri=http://localhost:8181/api/catalog \
---conf spark.sql.catalog.quickstart_catalog.credential=${USER_CLIENT_ID}:${USER_CLIENT_SECRET} \
---conf spark.sql.catalog.quickstart_catalog.scope='PRINCIPAL_ROLE:ALL' \
---conf spark.sql.catalog.quickstart_catalog.token-refresh-enabled=true \
---conf spark.sql.catalog.quickstart_catalog.client.region=us-west-2
+--conf spark.sql.catalog.polaris.warehouse=quickstart_catalog \
+--conf spark.sql.catalog.polaris.header.X-Iceberg-Access-Delegation=vended-credentials \
+--conf spark.sql.catalog.polaris=org.apache.iceberg.spark.SparkCatalog \
+--conf spark.sql.catalog.polaris.catalog-impl=org.apache.iceberg.rest.RESTCatalog \
+--conf spark.sql.catalog.polaris.uri=http://localhost:8181/api/catalog \
+--conf spark.sql.catalog.polaris.credential=${USER_CLIENT_ID}:${USER_CLIENT_SECRET} \
+--conf spark.sql.catalog.polaris.scope='PRINCIPAL_ROLE:ALL' \
+--conf spark.sql.catalog.polaris.token-refresh-enabled=true \
+--conf spark.sql.catalog.polaris.client.region=us-west-2
 ```
 
 Similar to the CLI commands above, this configures Spark to use the Polaris running at `localhost:8181`. If your Polaris server is running elsewhere, but sure to update the configuration appropriately.
@@ -185,7 +185,7 @@ docker attach $(docker ps -q --filter name=spark-sql)
 Once the Spark session starts, we can create a namespace and table within the catalog:
 
 ```sql
-USE quickstart_catalog;
+USE polaris;
 CREATE NAMESPACE IF NOT EXISTS quickstart_namespace;
 CREATE NAMESPACE IF NOT EXISTS quickstart_namespace.schema;
 USE NAMESPACE quickstart_namespace.schema;
