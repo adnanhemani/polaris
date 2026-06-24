@@ -136,12 +136,12 @@ constructor(private val softwareComponentFactory: SoftwareComponentFactory) : Pl
             suppressPomMetadataWarningsFor("testFixturesApiElements")
             suppressPomMetadataWarningsFor("testFixturesRuntimeElements")
 
-            project.tasks
-              .matching { task -> task.name == "createPolarisSparkJar" }
-              .configureEach {
+            project.afterEvaluate {
+              if (tasks.findByName("createPolarisSparkJar") != null) {
                 // if the project contains spark client jar, also publish the jar to maven
-                artifact(this)
+                mavenPublication.artifact(tasks.named("createPolarisSparkJar"))
               }
+            }
 
             if (project.isSigningEnabled()) {
               configure<SigningExtension> { sign(mavenPublication) }
