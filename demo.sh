@@ -17,45 +17,58 @@
 # under the License.
 #
 
-echo "Remember to change applications.properties!"
+# Abort unless the user answers "y".
+confirm() {
+  read -p "$1 (y to proceed) " answer
+  if ! [[ "$answer" == "y" ]]; then
+    echo "Aborted."
+    exit 1
+  fi
+}
 
-read -p "Did you change the applications.properties? (y to proceed) " answer
-if ![[ "$answer" == "y" ]]; then
-  echo "Aborted."
-  exit 1
-fi
+# Clear the screen, print a banner describing the step and the exact command
+# it will run, wait for confirmation, then run it.
+run_step() {
+  local title="$1"
+  shift
+  clear
+  echo "============================================================"
+  echo "  $title"
+  echo "============================================================"
+  echo
+  echo "\$ $*"
+  echo
+  confirm "Proceed?"
+  echo
+  "$@"
+  echo
+  read -p "Done. Press Enter to continue... " _
+}
+
+echo "Remember to change applications.properties!"
+confirm "Did you change the applications.properties?"
 
 echo 'IN POLARIS SHELL'
 echo 'export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/XXXX/XXXX/XXXX"'
+confirm "Did you export the Slack Webhook URL?"
 
-read -p "Did you export the Slack Webhook URL? (y to proceed) " answer
-if ![[ "$answer" == "y" ]]; then
-  echo "Aborted."
-  exit 1
-fi
+echo 'Install Apache Polaris PyPI Package'
+pip install apache-polaris
 
-echo 'export CATALOG_NAME=catalog1'
 export CATALOG_NAME=catalog1
-
-echo 'export RESTRICTED_CATALOG_NAME=restricted-catalog1'
 export RESTRICTED_CATALOG_NAME=restricted-catalog1
 
-echo 'Creating unrestricted and restricted catalogs...'
-echo './polaris --client-id root --client-secret s3cr3t catalogs create $CATALOG_NAME --storage-type FILE --default-base-location "/var/tmp/$CATALOG_NAME/"'
-./polaris --client-id root --client-secret s3cr3t catalogs create $CATALOG_NAME --storage-type FILE --default-base-location "/var/tmp/$CATALOG_NAME/"
-echo './polaris --client-id root --client-secret s3cr3t catalogs create $RESTRICTED_CATALOG_NAME --storage-type FILE --default-base-location "/var/tmp/$RESTRICTED_CATALOG_NAME/"'
-./polaris --client-id root --client-secret s3cr3t catalogs create $RESTRICTED_CATALOG_NAME --storage-type FILE --default-base-location "/var/tmp/$RESTRICTED_CATALOG_NAME/"
+run_step "Creating UNRESTRICTED catalog: $CATALOG_NAME" \
+  polaris --client-id root --client-secret s3cr3t catalogs create "$CATALOG_NAME" --storage-type FILE --default-base-location "/var/tmp/$CATALOG_NAME/"
 
-while true; do
-  read -p "Ready to delete unrestricted catalog? " answer
-  [[ "$answer" == "y" ]] && break
-done
-echo './polaris --client-id root --client-secret s3cr3t catalogs delete $CATALOG_NAME'
-./polaris --client-id root --client-secret s3cr3t catalogs delete $CATALOG_NAME
+run_step "Creating RESTRICTED catalog: $RESTRICTED_CATALOG_NAME" \
+  polaris --client-id root --client-secret s3cr3t catalogs create "$RESTRICTED_CATALOG_NAME" --storage-type FILE --default-base-location "/var/tmp/$RESTRICTED_CATALOG_NAME/"
 
-while true; do
-  read -p "Ready to delete RESTRICTED catalog? " answer
-  [[ "$answer" == "y" ]] && break
-done
-echo './polaris --client-id root --client-secret s3cr3t catalogs delete $RESTRICTED_CATALOG_NAME'
-./polaris --client-id root --client-secret s3cr3t catalogs delete $RESTRICTED_CATALOG_NAME
+run_step "Deleting UNRESTRICTED catalog: $CATALOG_NAME" \
+  polaris --client-id root --client-secret s3cr3t catalogs delete "$CATALOG_NAME"
+
+run_step "Deleting RESTRICTED catalog: $RESTRICTED_CATALOG_NAME" \
+  polaris --client-id root --client-secret s3cr3t catalogs delete "$RESTRICTED_CATALOG_NAME"
+
+clear
+echo "Demo complete."
