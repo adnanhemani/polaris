@@ -65,16 +65,34 @@ public final class OpenLineageBatchIngestResponse {
     return failedEvents;
   }
 
-  /** Received/successful/failed counts for the batch. */
+  /**
+   * Received/successful/failed counts for the batch, plus the counts of dataset references that
+   * were omitted from otherwise successful events by ingest authorization.
+   *
+   * <p>The omitted counts are aggregates over the whole batch and are grouped by reason only. They
+   * never identify which dataset was omitted: a per-dataset answer would make the endpoint a
+   * membership oracle over the catalog namespace. An event whose datasets were all omitted still
+   * counts as {@code successful} — lineage ingest is best-effort by design, and failing an engine's
+   * job over a lineage-only authorization gap is worse than recording nothing.
+   */
   public static final class Summary {
     private final int received;
     private final int successful;
     private final int failed;
+    private final int omittedUnresolved;
+    private final int omittedUnauthorized;
 
     public Summary(int received, int successful, int failed) {
+      this(received, successful, failed, 0, 0);
+    }
+
+    public Summary(
+        int received, int successful, int failed, int omittedUnresolved, int omittedUnauthorized) {
       this.received = received;
       this.successful = successful;
       this.failed = failed;
+      this.omittedUnresolved = omittedUnresolved;
+      this.omittedUnauthorized = omittedUnauthorized;
     }
 
     @JsonProperty("received")
@@ -90,6 +108,18 @@ public final class OpenLineageBatchIngestResponse {
     @JsonProperty("failed")
     public int failed() {
       return failed;
+    }
+
+    /** Dataset references omitted because they name no entity the caller can see. */
+    @JsonProperty("omitted_unresolved")
+    public int omittedUnresolved() {
+      return omittedUnresolved;
+    }
+
+    /** Dataset references omitted because the caller lacks the required lineage privilege. */
+    @JsonProperty("omitted_unauthorized")
+    public int omittedUnauthorized() {
+      return omittedUnauthorized;
     }
   }
 
