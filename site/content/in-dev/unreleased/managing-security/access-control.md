@@ -266,15 +266,17 @@ Granting either privilege on a catalog or namespace covers the tables beneath it
 namespace-scoped grant satisfies a table-scoped check without a per-table grant.
 
 A single OpenLineage event names both the datasets a job read and the datasets it wrote, and the two
-are authorized differently. Each **output** dataset requires `LINEAGE_INGEST` on the table; when the
-output table does not exist yet, as with a CREATE TABLE AS SELECT, the check falls back to the
-parent namespace, so a principal that may create the table may also record the lineage that creates
-it. Each **input** dataset requires only read access to that table, expressed as
-`TABLE_READ_PROPERTIES`. Citing a table as a source is not reading its lineage, so `LINEAGE_READ` is
-not required either; ordinary readers can record lineage from the sources they read without being
-granted write-level privileges on them. Note that `TABLE_CREATE` alone does not satisfy the input
-check: a principal that may only create tables in a namespace cannot name an existing table there as
-a lineage input unless it can also read that table.
+are authorized differently. Each **output** dataset requires `TABLE_INGEST_LINEAGE` or
+`VIEW_INGEST_LINEAGE` on the table or view. When the output table does not exist yet, as with a
+CREATE TABLE AS SELECT, the check is made against the parent namespace instead: the caller still
+needs `TABLE_INGEST_LINEAGE` on that namespace, granted directly or through a privilege that
+subsumes it. `TABLE_CREATE` does not confer it. Each **input** dataset requires only read access to
+that table or view, expressed as `TABLE_READ_PROPERTIES` or `VIEW_READ_PROPERTIES`. Citing a source
+is not reading its lineage, so the read lineage privilege is not required either; ordinary readers
+can record lineage from the sources they read without being granted write-level privileges on them.
+Note that `TABLE_CREATE` or `VIEW_CREATE` alone does not satisfy the input check: a principal that
+may only create tables or views in a namespace cannot name an existing one there as a lineage input
+unless it can also read it.
 
 ## RBAC example
 

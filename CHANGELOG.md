@@ -110,7 +110,11 @@ request adding CHANGELOG notes for breaking (!) changes and possibly other secti
   caller is not authorized for are omitted rather than failing the request, so an event that
   authorizes nothing succeeds while recording nothing. Responses report the number of omitted
   datasets grouped by reason, and the single-event and batch endpoints keep their existing status
-  codes.
+  codes. Output datasets require `TABLE_INGEST_LINEAGE` or `VIEW_INGEST_LINEAGE`; when an output
+  table does not exist yet, as with CREATE TABLE AS SELECT, `TABLE_INGEST_LINEAGE` is checked on the
+  parent namespace instead (`TABLE_CREATE` does not confer it). Input datasets require only
+  `TABLE_READ_PROPERTIES` or `VIEW_READ_PROPERTIES`, so ordinary readers can record lineage from the
+  sources they read without being granted write-level privileges on them.
 - Python CLI: `catalogs update` now supports `--no-sts` and `--no-kms` to toggle STS/KMS availability on an existing S3 catalog. Previously these were only settable at `catalogs create` time.
 - Python CLI: added `gcp` as an external catalog authentication type for Iceberg REST federation, enabling CLI creation of GCP-authenticated catalogs such as BigLake without passing Google credential secrets through command-line flags.
 - Python CLI: added a global `--page-size` option to paginate list calls internally on Iceberg endpoints. Requires the server-side `LIST_PAGINATION_ENABLED` feature flag.
