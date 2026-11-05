@@ -102,6 +102,19 @@ request adding CHANGELOG notes for breaking (!) changes and possibly other secti
   write-level privileges on them. Deployments using the Ranger authorizer must define the
   `lineage-query` and `lineage-ingest` access types in their Polaris service definition; citing a
   table as a lineage input reuses the existing `table-properties-read` access type.
+- The OpenLineage ingest endpoints now enforce authorization; previously they authenticated the
+  caller but performed no privilege checks. A dataset is treated as naming a Polaris table when its
+  OpenLineage namespace is listed in the new `LINEAGE_NAMESPACE_CATALOGS` realm configuration, or
+  when its name has three or more dot-separated segments (`<catalog>.<namespace>.<table>`); any
+  other dataset is recorded as external and carries no privilege check of its own. Datasets the
+  caller is not authorized for are omitted rather than failing the request, so an event that
+  authorizes nothing succeeds while recording nothing. Responses report the number of omitted
+  datasets grouped by reason, and the single-event and batch endpoints keep their existing status
+  codes. Output datasets require `TABLE_INGEST_LINEAGE` or `VIEW_INGEST_LINEAGE`; when an output
+  table does not exist yet, as with CREATE TABLE AS SELECT, `TABLE_INGEST_LINEAGE` is checked on the
+  parent namespace instead (`TABLE_CREATE` does not confer it). Input datasets require only
+  `TABLE_READ_PROPERTIES` or `VIEW_READ_PROPERTIES`, so ordinary readers can record lineage from the
+  sources they read without being granted write-level privileges on them.
 - Python CLI: `catalogs update` now supports `--no-sts` and `--no-kms` to toggle STS/KMS availability on an existing S3 catalog. Previously these were only settable at `catalogs create` time.
 - Python CLI: added `gcp` as an external catalog authentication type for Iceberg REST federation, enabling CLI creation of GCP-authenticated catalogs such as BigLake without passing Google credential secrets through command-line flags.
 - Python CLI: added a global `--page-size` option to paginate list calls internally on Iceberg endpoints. Requires the server-side `LIST_PAGINATION_ENABLED` feature flag.
