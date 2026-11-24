@@ -279,6 +279,40 @@ graph.
 Granting any of these privileges on a catalog or namespace covers the matching entities beneath it,
 so a namespace-scoped grant satisfies a table- or view-scoped check without a per-entity grant.
 
+#### Authorization of OpenLineage ingest
+
+An OpenLineage event is an assertion about an edge, such as "this job read A and wrote B", so each
+dataset in an event is authorized on its own. A dataset the caller is not authorized for is left out
+of the event before it is recorded, and the rest of the event is kept. An event whose datasets are
+all left out succeeds and records nothing, so a lineage-only authorization gap does not fail the job
+that sent it.
+
+Polaris reads the catalog and the table name from the dataset's `catalog` and `symlinks` facets,
+which OpenLineage Spark sets for tables in an Iceberg REST catalog, and not from the dataset's own
+`namespace` and `name`. A dataset is a Polaris dataset when the catalog it names exists in the
+realm, whether or not the table exists yet; any other dataset is recorded as an external dataset
+without a privilege check of its own. A dataset that names a catalog in the realm but no usable
+table is left out rather than recorded as external.
+
+Whether the dataset is a table or a view is not part of the event, so the privilege required depends
+on what the name resolves to:
+
+* Each **output** dataset requires `TABLE_INGEST_LINEAGE` or `VIEW_INGEST_LINEAGE` on the table or
+  view. When the output table does not exist yet, as with a CREATE TABLE AS SELECT, the check is
+  made against the parent namespace instead: the caller needs `TABLE_INGEST_LINEAGE` on it, granted
+  directly or through a privilege that confers it. `TABLE_CREATE` does not confer it.
+* Each **input** dataset requires only `TABLE_READ_PROPERTIES` or `VIEW_READ_PROPERTIES` on the
+  table or view. Citing a source is not reading its lineage, so the read lineage privileges are not
+  required, and ordinary readers can record lineage from the sources they read without being granted
+  write-level privileges on them. `TABLE_CREATE` or `VIEW_CREATE` alone does not satisfy this check.
+  An input that does not exist is left out; there is no fallback to its namespace.
+
+The response reports how many datasets were left out, and not which ones or why. A dataset that
+does not exist and one the caller may not access produce the same result, so the endpoint cannot be
+used to find out which tables exist. The batch endpoint returns the count as `summary.omitted`, and
+the single-event endpoint returns it in the `Polaris-Lineage-Omitted` response header when it is not
+zero.
+
 ## RBAC example
 
 The following diagram illustrates how RBAC works in Polaris and

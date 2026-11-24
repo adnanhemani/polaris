@@ -68,6 +68,11 @@ final class LineageTestEvents {
         outputs);
   }
 
+  /** An event that references no datasets at all, e.g. a job-lifecycle START. */
+  static OpenLineage.RunEvent datasetFreeEvent() {
+    return runEvent(List.of(), List.of());
+  }
+
   static OpenLineage.JobEvent jobEvent(
       List<OpenLineage.InputDataset> inputs, List<OpenLineage.OutputDataset> outputs) {
     return new OpenLineage.JobEvent(EVENT_TIME, PRODUCER, SCHEMA_URL, null, inputs, outputs);
@@ -89,6 +94,11 @@ final class LineageTestEvents {
   static OpenLineage.OutputDataset outputWithFacets(
       String namespace, String name, ObjectNode facets) {
     return dataset(OpenLineage.OutputDataset.class, namespace, name, facets);
+  }
+
+  static OpenLineage.StaticDataset staticDatasetWithFacets(
+      String namespace, String name, ObjectNode facets) {
+    return dataset(OpenLineage.StaticDataset.class, namespace, name, facets);
   }
 
   /**

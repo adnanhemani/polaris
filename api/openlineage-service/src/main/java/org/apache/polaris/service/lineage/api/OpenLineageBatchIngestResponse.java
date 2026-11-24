@@ -65,16 +65,32 @@ public final class OpenLineageBatchIngestResponse {
     return failedEvents;
   }
 
-  /** Received/successful/failed counts for the batch. */
+  /**
+   * Received/successful/failed counts for the batch, plus the count of dataset references that were
+   * omitted from otherwise successful events by ingest authorization.
+   *
+   * <p>The omitted count is an aggregate over the whole batch. It identifies neither which dataset
+   * was omitted nor why: a dataset that does not exist and one the caller may not touch are
+   * indistinguishable, so the endpoint is not a membership oracle over the catalog namespace. An
+   * event whose datasets were all omitted still counts as {@code successful} — lineage ingest is
+   * best-effort by design, and failing an engine's job over a lineage-only authorization gap is
+   * worse than recording nothing.
+   */
   public static final class Summary {
     private final int received;
     private final int successful;
     private final int failed;
+    private final int omitted;
 
     public Summary(int received, int successful, int failed) {
+      this(received, successful, failed, 0);
+    }
+
+    public Summary(int received, int successful, int failed, int omitted) {
       this.received = received;
       this.successful = successful;
       this.failed = failed;
+      this.omitted = omitted;
     }
 
     @JsonProperty("received")
@@ -90,6 +106,12 @@ public final class OpenLineageBatchIngestResponse {
     @JsonProperty("failed")
     public int failed() {
       return failed;
+    }
+
+    /** Dataset references omitted by ingest authorization, for any reason. */
+    @JsonProperty("omitted")
+    public int omitted() {
+      return omitted;
     }
   }
 
